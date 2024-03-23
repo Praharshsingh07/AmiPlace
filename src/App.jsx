@@ -1,11 +1,15 @@
 import {
+  createBrowserRouter,
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
+  RouterProvider
 } from "react-router-dom";
 import Login from "./Pages/Login";
-import Signup from "./Pages/Signup";
+import SignUpPage from "./components/SignUpPage";
+import Forgot_pass from "./components/Forgot_pass"
+import Reset_Success  from "./components/Reset_Success"
 
 function App() {
   const router = createBrowserRouter([
