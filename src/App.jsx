@@ -6,7 +6,7 @@ import {
   Navigate,
   RouterProvider
 } from "react-router-dom";
-import Login from "./Pages/Login";
+import Login from "./components/Login";
 import SignUpPage from "./components/SignUpPage";
 import Forgot_pass from "./components/Forgot_pass"
 import Reset_Success  from "./components/Reset_Success"
