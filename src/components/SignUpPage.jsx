@@ -51,6 +51,7 @@ function SignUpPage() {
 
     if (Object.keys(errors).length === 0) {
       setLoading(true);
+      setError(""); // Clear any previous error message
       try {
         const userCredential = await createUserWithEmailAndPassword(
           auth,
@@ -61,10 +62,11 @@ function SignUpPage() {
 
         // Send email verification
         await sendEmailVerification(user);
-        console.log("Email verification sent");
 
         // Redirect the user to a verification page or show a message
+        //navigate("/verify-email");
         navigate("/Login");
+        setError("Email verification sent");
       } catch (error) {
         setError(error.message);
         console.log(error);
@@ -75,14 +77,14 @@ function SignUpPage() {
   };
 
   return (
-    <div className="h-screen w-screen flex justify-center items-center p-3 overflow-hidden">
-      <div className="h-10/12 w-auto grid grid-cols-2 rounded-xl">
-        <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white rounded-xl shadow-lg overflow-hidden">
+        <div className="flex flex-col justify-center px-6 py-12 lg:px-8">
           <div className="sm:mx-auto sm:w-full sm:max-w-sm">
             <h2 className="mt-4 mb-4 text-center text-3xl font-bold leading-9 tracking-tight text-gray-900">
               Create a new account
             </h2>
-            {error && <p className="text-red-500">{error}</p>}
+            {error && <p className={`text-green-500 ${error.includes("verification") ? "" : "text-red-500"}`}>{error}</p>}
           </div>
 
           <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
@@ -199,7 +201,7 @@ function SignUpPage() {
           </div>
         </div>
 
-        <div className="m-6">
+        <div className="hidden md:block m-6">
           <Lottie
             className="w-full h-full rounded-xl"
             animationData={signupAnimation}

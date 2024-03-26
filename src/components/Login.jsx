@@ -67,9 +67,9 @@ function Login() {
   };
 
   return (
-    <div className="h-screen w-screen flex justify-center items-center p-3 overflow-hidden">
-      <div className="h-10/12 w-auto grid grid-cols-2 rounded-xl">
-        <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white rounded-xl shadow-lg overflow-hidden">
+        <div className="flex flex-col justify-center px-6 py-12 lg:px-8">
           <div className="sm:mx-auto sm:w-full sm:max-w-sm">
             <h2 className="mt-8 mb-8 text-center text-3xl font-bold leading-9 tracking-tight text-gray-900">
               Login to your account
@@ -149,7 +149,7 @@ function Login() {
             <p className="mt-10 text-center text-sm text-gray-500">
               Not a member?
               <Link
-                to="/signup"
+                to="/SignUpPage"
                 id="msg"
                 className="font-semibold leading-6 text-blue-600 hover:text-indigo-500 ml-2"
               >
@@ -159,7 +159,7 @@ function Login() {
           </div>
         </div>
 
-        <div className="m-6">
+        <div className="hidden md:block m-6">
           <Lottie
             className="w-full h-full rounded-xl"
             animationData={signupAnimation}
