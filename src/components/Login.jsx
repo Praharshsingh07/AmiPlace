@@ -112,7 +112,7 @@ function Login() {
                   </label>
                   <div className="text-sm">
                     <Link
-                      to="/forgot-password"
+                      to="/Forgot_pass"
                       className="font-semibold text-blue-700 hover:text-blue-500"
                     >
                       Forgot password?

@@ -1,29 +1,15 @@
-import {
-  createBrowserRouter,
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-  RouterProvider
-} from "react-router-dom";
-import Login from "./components/Login";
-import SignUpPage from "./components/SignUpPage";
-import Forgot_pass from "./components/Forgot_pass"
-import Reset_Success  from "./components/Reset_Success"
+import React from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
+import Routes from './components/Routes';
+import { AuthProvider } from './components/AuthContext';
 
 function App() {
-  const router = createBrowserRouter([
-    { path: "/", element: <SignUpPage /> },
-    { path: "/SignUpPage", element: <SignUpPage /> },
-    { path: "/Login", element: <Login /> },
-    { path: "/Login/Forgot_pass", element: <Forgot_pass /> },
-    { path: "/Reset_Success", element: <Reset_Success /> },
-  ]);
-
   return (
-    <>
-      <RouterProvider router={router} />
-    </>
+    <AuthProvider>
+      <Router>
+        <Routes />
+      </Router>
+    </AuthProvider>
   );
 }
 
