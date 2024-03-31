@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Lottie from "lottie-react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase.config.js";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,Navigate } from "react-router-dom";
 import signupAnimation from "../animations/animation-2.json";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../components/AuthContext";
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -15,6 +16,7 @@ function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { currentUser } = useContext(AuthContext);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -43,6 +45,7 @@ function Login() {
 
     if (Object.keys(errors).length === 0) {
       setLoading(true);
+      setError(""); // Clear any previous error message
       try {
         const userCredential = await signInWithEmailAndPassword(
           auth,
@@ -55,18 +58,20 @@ function Login() {
         // Redirect the user or perform other actions after successful login
         navigate("/dashboard"); // Replace with your desired route
       } catch (error) {
-        const errorCode = error.code;
-        console.log(errorCode);
-        const errorMessage = error.message;
-        console.log(errorMessage);
-        setError(errorMessage);
+        console.log("Login Error:", error);
+        setError(error.message); // Set the error message
       } finally {
         setLoading(false);
       }
     }
   };
 
-  return (
+  // Redirect if already logged in
+  if (currentUser) {
+    return <Navigate to="/dashboard" />;
+  }
+
+   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white rounded-xl shadow-lg overflow-hidden">
         <div className="flex flex-col justify-center px-6 py-12 lg:px-8">

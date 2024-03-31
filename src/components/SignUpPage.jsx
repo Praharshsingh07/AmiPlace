@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { auth } from "../firebase.config.js";
-import { useNavigate } from "react-router-dom";
+import { useNavigate ,Navigate} from "react-router-dom";
 import Lottie from "lottie-react";
 import signupAnimation from "../animations/lottieAni-3.json";
 import { Link } from "react-router-dom";
-
+import { AuthContext } from "../components/AuthContext";
 function SignUpPage() {
   const [formData, setFormData] = useState({
     username: "",
@@ -17,6 +17,7 @@ function SignUpPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { currentUser } = useContext(AuthContext);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -61,20 +62,24 @@ function SignUpPage() {
         const user = userCredential.user;
 
         // Send email verification
-        await sendEmailVerification(user);
+        const email=await sendEmailVerification(user);
+        console.log(email);
 
-        // Redirect the user to a verification page or show a message
-        //navigate("/verify-email");
-        navigate("/Login");
-        setError("Email verification sent");
+        // Redirect the user to the Login page after successful sign-up
+        navigate("/EmailVerify");
       } catch (error) {
-        setError(error.message);
+        setError(error.message); // Set the error message
         console.log(error);
       } finally {
         setLoading(false);
       }
     }
   };
+
+  // Redirect if already logged in
+  if (currentUser) {
+    return <Navigate to="/dashboard" />;
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
@@ -84,13 +89,16 @@ function SignUpPage() {
             <h2 className="mt-4 mb-4 text-center text-3xl font-bold leading-9 tracking-tight text-gray-900">
               Create a new account
             </h2>
-            {error && <p className={`text-green-500 ${error.includes("verification") ? "" : "text-red-500"}`}>{error}</p>}
+            {error && <p className="text-red-500">{error}</p>}
           </div>
 
           <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div>
-                <label className="block text-sm font-medium leading-6 text-gray-900">
+                <label
+                  htmlFor="username"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   Username
                 </label>
                 <div className="mt-2">
@@ -98,13 +106,13 @@ function SignUpPage() {
                     id="username"
                     name="username"
                     type="text"
+                    required
                     value={formData.username}
                     onChange={handleChange}
-                    required
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
                   {formErrors.username && (
-                    <p className="text-red-500">{formErrors.username}</p>
+                    <p className="text-red-500 mt-2">{formErrors.username}</p>
                   )}
                 </div>
               </div>
@@ -121,12 +129,15 @@ function SignUpPage() {
                     id="email"
                     name="email"
                     type="email"
+                    autoComplete="email"
+                    required
                     value={formData.email}
                     onChange={handleChange}
-                    required
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
-                  {formErrors.email && <p className="text-red-500">{formErrors.email}</p>}
+                  {formErrors.email && (
+                    <p className="text-red-500 mt-2">{formErrors.email}</p>
+                  )}
                 </div>
               </div>
 
@@ -144,12 +155,15 @@ function SignUpPage() {
                     id="password"
                     name="password"
                     type="password"
+                    autoComplete="current-password"
+                    required
                     value={formData.password}
                     onChange={handleChange}
-                    required
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
-                  {formErrors.password && <p className="text-red-500">{formErrors.password}</p>}
+                  {formErrors.password && (
+                    <p className="text-red-500 mt-2">{formErrors.password}</p>
+                  )}
                 </div>
               </div>
 
@@ -167,13 +181,16 @@ function SignUpPage() {
                     id="confirmPassword"
                     name="confirmPassword"
                     type="password"
+                    autoComplete="current-password"
+                    required
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    required
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
                   {formErrors.confirmPassword && (
-                    <p className="text-red-500">{formErrors.confirmPassword}</p>
+                    <p className="text-red-500 mt-2">
+                      {formErrors.confirmPassword}
+                    </p>
                   )}
                 </div>
               </div>
@@ -181,10 +198,9 @@ function SignUpPage() {
               <div>
                 <button
                   type="submit"
-                  disabled={loading}
-                  className="flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                  className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 >
-                  {loading ? "Loading..." : "Sign Up"}
+                  {loading ? "Loading..." : "Sign up"}
                 </button>
               </div>
             </form>
@@ -193,6 +209,7 @@ function SignUpPage() {
               Already a member?
               <Link
                 to="/Login"
+                id="msg"
                 className="font-semibold leading-6 text-blue-600 hover:text-indigo-500 ml-2"
               >
                 Login
