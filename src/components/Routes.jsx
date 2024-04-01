@@ -15,6 +15,7 @@ const Router = () => {
       <Route path="/Login" element={<Login />} />
       <Route path="/dashboard" element={currentUser ? <Dashboard /> : <Navigate to="/Login" />} />
       <Route path="/EmailVerify" element={<EmailVerify />} />
+      
     </Routes>
   );
 };
