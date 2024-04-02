@@ -6,6 +6,9 @@ import Lottie from "lottie-react";
 import signupAnimation from "../animations/lottieAni-3.json";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../components/AuthContext";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../firebase.config.js";
+
 function SignUpPage() {
   const [formData, setFormData] = useState({
     username: "",
@@ -65,7 +68,12 @@ function SignUpPage() {
         const email=await sendEmailVerification(user);
         console.log(email);
 
-        // Redirect the user to the Login page after successful sign-up
+        await setDoc(doc(db, "users", user.uid), {
+          username: formData.username,
+          email: formData.email,
+          createdAt: new Date(),
+        });
+
         navigate("/EmailVerify");
       } catch (error) {
         setError(error.message); // Set the error message

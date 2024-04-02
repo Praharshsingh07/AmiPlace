@@ -5,6 +5,8 @@ import { auth } from "../firebase.config.js";
 import { useNavigate,Navigate } from "react-router-dom";
 import signupAnimation from "../animations/animation-2.json";
 import { Link } from "react-router-dom";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../firebase.config.js"; // Assuming you have your Firebase configuration imported
 import { AuthContext } from "../components/AuthContext";
 
 function Login() {
@@ -55,9 +57,11 @@ function Login() {
         const user = userCredential.user;
         console.log(user);
         setFormData({ email: "", password: "" });
-        // Redirect the user or perform other actions after successful login
-        navigate("/dashboard"); // Replace with your desired route
-      } catch (error) {
+
+        await setDoc(doc(db, "users", user.uid), {
+          lastLoggedIn: new Date(),
+        }, { merge: true });
+        navigate("/dashboard");
         console.log("Login Error:", error);
         setError(error.message); // Set the error message
       } finally {
