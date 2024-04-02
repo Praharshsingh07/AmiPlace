@@ -1,11 +1,11 @@
 import React, { useState, useContext } from "react";
 import Lottie from "lottie-react";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase.config.js";
+import { auth } from "../../firebase.config.js";
 import { useNavigate,Navigate } from "react-router-dom";
-import signupAnimation from "../animations/animation-2.json";
+import signupAnimation from "../../animations/animation-2.json";
 import { Link } from "react-router-dom";
-import { AuthContext } from "../components/AuthContext";
+import { AuthContext } from "../Auth/AuthContext.jsx";
 
 function Login() {
   const [formData, setFormData] = useState({
