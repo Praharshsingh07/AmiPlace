@@ -5,8 +5,6 @@ import { auth } from "../firebase.config.js";
 import { useNavigate,Navigate } from "react-router-dom";
 import signupAnimation from "../animations/animation-2.json";
 import { Link } from "react-router-dom";
-import { doc, setDoc } from "firebase/firestore";
-import { db } from "../firebase.config.js";
 import { AuthContext } from "../components/AuthContext";
 
 function Login() {
@@ -47,7 +45,7 @@ function Login() {
 
     if (Object.keys(errors).length === 0) {
       setLoading(true);
-      setError("");
+      setError(""); // Clear any previous error message
       try {
         const userCredential = await signInWithEmailAndPassword(
           auth,
@@ -57,20 +55,18 @@ function Login() {
         const user = userCredential.user;
         console.log(user);
         setFormData({ email: "", password: "" });
-
-        await setDoc(doc(db, "users", user.uid), {
-          lastLoggedIn: new Date(),
-        }, { merge: true });
-        navigate("/dashboard");
+        // Redirect the user or perform other actions after successful login
+        navigate("/dashboard"); // Replace with your desired route
+      } catch (error) {
         console.log("Login Error:", error);
-        setError(error.message); 
+        setError(error.message); // Set the error message
       } finally {
         setLoading(false);
       }
     }
   };
 
-  // 
+  // Redirect if already logged in
   if (currentUser) {
     return <Navigate to="/dashboard" />;
   }

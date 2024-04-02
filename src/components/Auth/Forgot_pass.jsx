@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Lottie from "lottie-react";
-import signupAnimation from "../animations/animation-2.json";
+import signupAnimation from "../../animations/animation-2.json";
 import { Link, useNavigate } from "react-router-dom";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 
@@ -36,14 +36,25 @@ const Forgot_pass = () => {
               <h2 className="mt-8 mb-8 text-center text-3xl font-bold leading-9 tracking-tight text-gray-900">
                 Forgot your password!
               </h2>
-              {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
-              {success && <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">{success}</div>}
+              {error && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                  {error}
+                </div>
+              )}
+              {success && (
+                <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                  {success}
+                </div>
+              )}
             </div>
 
             <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
               <form className="space-y-6" onSubmit={handleSubmit}>
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium leading-6 text-gray-900"
+                  >
                     Email address
                   </label>
                   <div className="mt-2">
@@ -73,7 +84,10 @@ const Forgot_pass = () => {
           </div>
 
           <div className="hidden md:block m-6">
-            <Lottie className="w-full h-full rounded-xl" animationData={signupAnimation} />
+            <Lottie
+              className="w-full h-full rounded-xl"
+              animationData={signupAnimation}
+            />
           </div>
         </div>
       </div>
