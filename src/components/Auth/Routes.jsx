@@ -1,11 +1,11 @@
 import React, { useContext } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import Login from "../components/Login";
-import SignUpPage from "../components/SignUpPage";
-import Forgot_pass from "../components/Forgot_pass";
-import Dashboard from "../components/Dashboard";
-import { AuthContext } from "../components/AuthContext";
-import PrivateRoute from "../components/PrivateRoute";
+import Login from "./Login";
+import SignUpPage from "./SignUpPage";
+import Forgot_pass from "./Forgot_pass";
+import Dashboard from "../Discussion/Dashboard";
+import { AuthContext } from "./AuthContext";
+import PrivateRoute from "./PrivateRoute";
 import EmailVerify from "./email";
 
 const Router = () => {

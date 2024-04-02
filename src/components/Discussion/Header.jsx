@@ -1,11 +1,8 @@
-import { useSelector } from "react-redux";
-import logoSlice from "../store/LogoSlice";
-
 const Header = () => {
   const path = "src/Media/logo.svg";
   return (
     <>
-      <div className="navigation flex flex-col md:flex-row justify-between items-center">
+      <div className="navigation flex flex-col md:flex-row justify-between items-center border-b-[0.20px] border-b-gray-500">
         {/* Logo */}
         <div className="logo flex space-x-3 ml-5 my-3">
           <div className="img w-7">

@@ -1,9 +1,9 @@
 import { RiMessage3Fill } from "react-icons/ri";
 const RecentUpdates = () => {
   return (
-    <div class="recentUpdatesContainer border-[1px] hidden md:block border-gray-300 px-7 py-5 w-[30%] h-[100vh] bg-gray-100 sticky top-0 right-0">
+    <div class="recentUpdatesContainer  hidden md:block  px-7 py-5 w-[30%] h-[100vh]  sticky top-0 right-0 border-[0.25px] border-gray-500 bg-slate-100 rounded-md m-5">
       <h1 class="text-2xl font-bold mb-2">Recent Updates</h1>
-      <ul class="border-t-[1px] border-t-gray-500">
+      <ul class="border-t-[1px] border-t-gray-500 ">
         <li class="my-5 flex">
           <RiMessage3Fill />
           <span className="ml-2"> TCS coming for lorem ispum</span>

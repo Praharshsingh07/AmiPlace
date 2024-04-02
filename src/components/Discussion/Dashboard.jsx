@@ -1,12 +1,12 @@
-import "../index.css";
+import "../../index.css";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { getAuth, signOut } from "firebase/auth";
-import Footer from "../components/Footer";
 import Header from "./Header";
 import PostListContainer from "./PostListContainer";
 import RecentUpdates from "./RecentUpdates";
 import Blog from "./Blog";
+import { useState } from "react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -20,6 +20,7 @@ const Dashboard = () => {
       console.error("Error signing out:", error);
     }
   };
+  const [create, setCreate] = useState("false");
   return (
     <>
       <Header />

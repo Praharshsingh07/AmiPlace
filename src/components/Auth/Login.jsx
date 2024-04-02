@@ -1,11 +1,11 @@
 import React, { useState, useContext } from "react";
 import Lottie from "lottie-react";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase.config.js";
-import { useNavigate,Navigate } from "react-router-dom";
-import signupAnimation from "../animations/animation-2.json";
+import { auth } from "../../firebase.config";
+import { useNavigate, Navigate } from "react-router-dom";
+import signupAnimation from "../../animations/animation-2.json";
 import { Link } from "react-router-dom";
-import { AuthContext } from "../components/AuthContext";
+import { AuthContext } from "./AuthContext";
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -71,7 +71,7 @@ function Login() {
     return <Navigate to="/dashboard" />;
   }
 
-   return (
+  return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white rounded-xl shadow-lg overflow-hidden">
         <div className="flex flex-col justify-center px-6 py-12 lg:px-8">

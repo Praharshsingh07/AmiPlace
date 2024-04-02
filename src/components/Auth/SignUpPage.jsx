@@ -1,11 +1,14 @@
 import React, { useState, useContext } from "react";
-import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
-import { auth } from "../firebase.config.js";
-import { useNavigate ,Navigate} from "react-router-dom";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+} from "firebase/auth";
+import { auth } from "../../firebase.config.js";
+import { useNavigate, Navigate } from "react-router-dom";
 import Lottie from "lottie-react";
-import signupAnimation from "../animations/lottieAni-3.json";
+import signupAnimation from "../../animations/lottieAni-3.json";
 import { Link } from "react-router-dom";
-import { AuthContext } from "../components/AuthContext";
+import { AuthContext } from "./AuthContext";
 function SignUpPage() {
   const [formData, setFormData] = useState({
     username: "",
@@ -62,7 +65,7 @@ function SignUpPage() {
         const user = userCredential.user;
 
         // Send email verification
-        const email=await sendEmailVerification(user);
+        const email = await sendEmailVerification(user);
         console.log(email);
 
         // Redirect the user to the Login page after successful sign-up
