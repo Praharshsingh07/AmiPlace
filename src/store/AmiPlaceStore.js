@@ -3,13 +3,17 @@ import logoSlice from "./LogoSlice";
 import postsSlice from "./postsSlice";
 import userDetailsSlice from "./userDetailsSlice";
 import createPostSlice from "./createPostSlice";
+import blogDataSlice from "./blogDataSlice";
+import universalClickSlice from "./universalClickSlice";
 
 const amiPlaceStore = configureStore({
   reducer: {
     logo: logoSlice.reducer,
     userDetails: userDetailsSlice.reducer,
     posts: postsSlice.reducer,
+    blogData: blogDataSlice.reducer,
     createPost: createPostSlice.reducer,
+    universalClick: universalClickSlice.reducer,
   },
 });
 export default amiPlaceStore;

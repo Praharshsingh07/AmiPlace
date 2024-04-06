@@ -11,6 +11,7 @@ const postsSlice = createSlice({
         yearInfo: "3rd year CSE",
         content:
           "During the interview, the candidate exhibited a remarkable blend of technical expertise and interpersonal skills. Their ability to navigate complex scenarios with ease and articulate solutions clearly was commendable.",
+        postImage: "",
         likes: 51,
       },
       {
@@ -20,6 +21,7 @@ const postsSlice = createSlice({
         yearInfo: "3rd year CSE",
         content:
           "During the interview, the candidate exhibited a remarkable blend of technical expertise and interpersonal skills. Their ability to navigate complex scenarios with ease and articulate solutions clearly was commendable.",
+        postImage: "",
         likes: 73,
       },
       {
@@ -29,6 +31,7 @@ const postsSlice = createSlice({
         yearInfo: "3rd year CSE",
         content:
           "During the interview, the candidate exhibited a remarkable blend of technical expertise and interpersonal skills. Their ability to navigate complex scenarios with ease and articulate solutions clearly was commendable.",
+        postImage: "",
         likes: 30,
       },
       {
@@ -39,15 +42,32 @@ const postsSlice = createSlice({
         content:
           "During the interview, the candidate exhibited a remarkable blend of technical expertise and interpersonal skills. Their ability to navigate complex scenarios with ease and articulate solutions clearly was commendable.",
         likes: 19,
+        postImage: "",
       },
     ],
   },
   reducers: {
     addPost: (state, action) => {
-      state.initialPosts = [action.payload, ...state.initialPosts];
+      state.initialPosts.unshift(action.payload);
+      state.initialPosts.forEach((item) => {
+        item.postId++;
+      });
     },
-    deletePost: (state) => {
-      console.log("Post Deleted");
+    deletePost: (state, action) => {
+      const newPostList = state.initialPosts.filter(
+        (post) => post.postId != action.payload
+      );
+      for (let i = action.payload; i < newPostList.length; i++) {
+        newPostList[i].postId--;
+      }
+      state.initialPosts = newPostList;
+    },
+    isLiked: (state, action) => {
+      if (action.payload.like) {
+        state.initialPosts[action.payload.postId].likes++;
+      } else {
+        state.initialPosts[action.payload.postId].likes--;
+      }
     },
   },
 });

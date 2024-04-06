@@ -13,12 +13,13 @@ const Header = () => {
           </div>
         </div>
         {/* Navigation */}
-        <div className="navbar flex text-sm justify-end space-x-5 md:space-x-14 md:text-lg p4 mr-5">
+        <div className="navbar flex text-sm justify-end space-x-5 md:space-x-14 md:text-lg p4 mr-5 mt-2">
           <li className="list-none">
             <a href="">Community</a>
           </li>
-          <li className="list-none">
-            <a href="">Jobs/Interships</a>
+          <li className="list-none flex flex-col">
+            <div className="cursor-not-allowed">Jobs/Interships</div>
+            <span className="text-xs opacity-45 ml-2">Comming Soon...</span>
           </li>
           <li className="list-none">
             <a href="">Companies</a>
