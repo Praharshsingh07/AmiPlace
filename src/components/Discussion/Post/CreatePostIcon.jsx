@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { createPostActions } from "../../store/createPostSlice";
+import { createPostActions } from "../../../store/createPostSlice";
 
 const CreatePostIcon = () => {
   const dispatch = useDispatch();
@@ -8,10 +8,10 @@ const CreatePostIcon = () => {
     dispatch(createPostActions.createPost());
   };
 
-  const { userData } = useSelector((store) => store.userDetails);
-  const imgPath = userData.imgPath;
+  const img = useSelector((store) => store.userDetails.userData.imgPath);
+  const imgPath = img;
   return (
-    <div className="createPostContainer border-b-[1px] border-b-gray-300 flex items-center justify-center space-x-3 py-7 sticky top-0 z-20 bg-white rounded-t-md">
+    <div className="createPostContainer border-y-[1px] border-b-gray-300 flex items-center justify-center space-x-3 py-7 px-1 sticky top-0 z-20 bg-white rounded-t-md">
       <div className="profileImg">
         <img
           className="rounded-full w-12 border-[3px] border-green-600"

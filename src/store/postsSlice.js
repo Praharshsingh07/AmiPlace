@@ -5,6 +5,7 @@ const postsSlice = createSlice({
   initialState: {
     initialPosts: [
       {
+        postKey: "da3EDe",
         postId: 0,
         userImage: "/src/Media/images/my_img.jpeg",
         userName: "devanshVerma",
@@ -13,8 +14,10 @@ const postsSlice = createSlice({
           "During the interview, the candidate exhibited a remarkable blend of technical expertise and interpersonal skills. Their ability to navigate complex scenarios with ease and articulate solutions clearly was commendable.",
         postImage: "",
         likes: 51,
+        liked: false,
       },
       {
+        postKey: "rn3EDe",
         postId: 1,
         userImage: "/src/Media/images/rohit.jpeg",
         userName: "rohitJain",
@@ -23,8 +26,10 @@ const postsSlice = createSlice({
           "During the interview, the candidate exhibited a remarkable blend of technical expertise and interpersonal skills. Their ability to navigate complex scenarios with ease and articulate solutions clearly was commendable.",
         postImage: "",
         likes: 73,
+        liked: false,
       },
       {
+        postKey: "aK3EDe",
         postId: 2,
         userImage: "/src/Media/images/anush.jpeg",
         userName: "anushMK",
@@ -33,8 +38,10 @@ const postsSlice = createSlice({
           "During the interview, the candidate exhibited a remarkable blend of technical expertise and interpersonal skills. Their ability to navigate complex scenarios with ease and articulate solutions clearly was commendable.",
         postImage: "",
         likes: 30,
+        liked: false,
       },
       {
+        postKey: "ph3EDe",
         postId: 3,
         userImage: "/src/Media/images/prah.png",
         userName: "praharshRajSingh",
@@ -43,6 +50,7 @@ const postsSlice = createSlice({
           "During the interview, the candidate exhibited a remarkable blend of technical expertise and interpersonal skills. Their ability to navigate complex scenarios with ease and articulate solutions clearly was commendable.",
         likes: 19,
         postImage: "",
+        liked: false,
       },
     ],
   },
@@ -62,10 +70,13 @@ const postsSlice = createSlice({
       }
       state.initialPosts = newPostList;
     },
-    isLiked: (state, action) => {
+    Liked: (state, action) => {
+      console.log(action.payload.like);
       if (action.payload.like) {
+        state.initialPosts[action.payload.postId].liked = action.payload.like;
         state.initialPosts[action.payload.postId].likes++;
       } else {
+        state.initialPosts[action.payload.postId].liked = action.payload.like;
         state.initialPosts[action.payload.postId].likes--;
       }
     },

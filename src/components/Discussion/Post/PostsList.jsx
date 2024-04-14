@@ -5,9 +5,9 @@ const PostsList = () => {
   const { initialPosts } = useSelector((store) => store.posts);
   return (
     <>
-      {console.log("postListRepainted")}
       {initialPosts.map((post) => (
         <Post
+          key={post.postKey}
           postId={post.postId}
           userImage={post.userImage}
           postImage={post.postImage}
@@ -15,6 +15,7 @@ const PostsList = () => {
           yearInfo={post.yearInfo}
           content={post.content}
           likes={post.likes}
+          liked={post.liked}
         />
       ))}
     </>

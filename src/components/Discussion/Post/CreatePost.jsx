@@ -1,9 +1,9 @@
 import { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createPostActions } from "../../store/createPostSlice";
-import { postsAction } from "../../store/postsSlice";
 import { FcDeleteRow } from "react-icons/fc";
 import { BsImage } from "react-icons/bs";
+import { createPostActions } from "../../../store/createPostSlice";
+import { postsAction } from "../../../store/postsSlice";
 
 const CreatePost = () => {
   const { userData } = useSelector((state) => state.userDetails);
@@ -29,6 +29,7 @@ const CreatePost = () => {
     const postContent = postContentInput.current.value;
     if (postContent != "") {
       const newPost = {
+        postKey: Math.random() * (1000000000 - 1) + 1,
         postId: -1,
         userImage: userData.imgPath,
         postImage: imageUrl,
@@ -36,6 +37,7 @@ const CreatePost = () => {
         yearInfo: userData.yearInfo,
         content: postContent,
         likes: 0,
+        liked: false,
       };
       dispatch(postsAction.addPost(newPost));
       dispatch(createPostActions.createPost());
@@ -65,7 +67,7 @@ const CreatePost = () => {
         rows="10"
         className="h-52 px-2 w-[100%] resize-none mt-3 focus:outline-none"
         placeholder="Share your experience or ask from others."
-        autofocus
+        autoFocus
       ></textarea>
       <div className="flex justify-between">
         <label

@@ -2,14 +2,17 @@ const Header = () => {
   const path = "src/Media/logo.svg";
   return (
     <>
-      <div className="navigation flex flex-col md:flex-row justify-between items-center border-b-[0.20px] border-b-gray-500">
+      <div className="navigation flex flex-col md:flex-row justify-between items-center border-b-[0.20px] border-b-gray-500 bg-slate-100">
         {/* Logo */}
         <div className="logo flex space-x-3 ml-5 my-3">
           <div className="img w-7">
             <img src={`${path}`} alt="logo" />
           </div>
           <div className="appName">
-            <span className="text-2xl">AmiPlace</span>
+            <span className="text-2xl">AMIPLACE</span>
+            <div className="slogan text-xs opacity-50">
+              Place where your career starts
+            </div>
           </div>
         </div>
         {/* Navigation */}

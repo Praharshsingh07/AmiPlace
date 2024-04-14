@@ -7,7 +7,7 @@ const BlogsContainer = () => {
   const [creatBlogBtn, setCreateBlogBtn] = useState(false);
 
   return (
-    <div className="blogContainer hidden md:block px-7 py-5 w-[30%] h-[100%] sticky top-0 left-0 border-[0.25px] border-gray-500 m-5 rounded-md">
+    <div className="blogContainer hidden md:block px-7 py-5 w-[30%] h-[100%] sticky top-0 left-0 m-5 rounded-md shadow-xl bg-[rgb(255,255,255)]">
       <h1 className="text-2xl font-bold mb-2">BLOG</h1>
       <BlogList />
       {creatBlogBtn === true ? (

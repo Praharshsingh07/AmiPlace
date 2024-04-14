@@ -5,9 +5,13 @@ const BlogList = () => {
   const { blogs } = useSelector((store) => store.blogData);
 
   return (
-    <ul className="border-t-[1px] border-t-gray-500 text-blue-500">
+    <ul className="border-t-[1px] border-t-gray-500">
       {blogs.map((blog) => (
-        <Blog blogLink={blog.blogLink} blogText={blog.blogDisplayText} />
+        <Blog
+          key={blog.blogKey}
+          blogLink={blog.blogLink}
+          blogText={blog.blogDisplayText}
+        />
       ))}
     </ul>
   );

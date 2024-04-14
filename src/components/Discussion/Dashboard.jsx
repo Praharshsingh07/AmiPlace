@@ -2,12 +2,10 @@ import "../../index.css";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { getAuth, signOut } from "firebase/auth";
-import Header from "./Header";
-import PostListContainer from "./PostListContainer";
-import RecentUpdates from "./RecentUpdates";
-import BlogsContainer from "./BlogsContainer";
-import { useDispatch } from "react-redux";
-import { universalClickAction } from "../../store/universalClickSlice";
+import Header from "../Header";
+import BlogsContainer from "./Blog/BlogsContainer";
+import PostListContainer from "./Post/PostListContainer";
+import RecentUpdates from "./Recent Updates/RecentUpdates";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -21,10 +19,6 @@ const Dashboard = () => {
       console.error("Error signing out:", error);
     }
   };
-  // const dispatch = useDispatch();
-  // const handleUniversalClick = () => {
-  //   dispatch(universalClickAction.toggle());
-  // };
   return (
     <>
       <Header />

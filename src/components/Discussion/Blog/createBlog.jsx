@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { GrAggregate } from "react-icons/gr";
 import { useDispatch } from "react-redux";
-import { blogActions } from "../../store/blogDataSlice";
+import { blogActions } from "../../../store/blogDataSlice";
 
 const CreateBlog = ({ setCreateBlogBtn }) => {
   const dispatch = useDispatch();
@@ -16,6 +16,7 @@ const CreateBlog = ({ setCreateBlogBtn }) => {
         blogId: -1,
         blogLink: blogLink,
         blogDisplayText: blogText,
+        blogKey: Math.random() * (1000000000 - 1) + 1,
       };
       dispatch(blogActions.addBlog(newBlog));
       setCreateBlogBtn(false);
