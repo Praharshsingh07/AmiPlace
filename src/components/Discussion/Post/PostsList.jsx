@@ -7,11 +7,15 @@ const PostsList = () => {
     <>
       {initialPosts.map((post) => (
         <Post
+          key={post.postKey}
+          postId={post.postId}
           userImage={post.userImage}
+          postImage={post.postImage}
           userName={post.userName}
           yearInfo={post.yearInfo}
           content={post.content}
           likes={post.likes}
+          liked={post.liked}
         />
       ))}
     </>
