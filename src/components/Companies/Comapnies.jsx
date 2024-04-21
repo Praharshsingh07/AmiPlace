@@ -8,9 +8,9 @@ export default function Comapnies() {
   const companies = useContext(CompanyCards);
   return (
     <>
-      <div className="mt-[67px]">
-        <div className="flex">
-          <div className="ml-[420px]">
+      <div className="mt-[67px] bg-black">
+        <div className="flex mt-[-20px]">
+          <div className="ml-[420px] mt-[25px]">
             {companies.map((e) => {
               return (
                 <CompanyCard
@@ -30,3 +30,4 @@ export default function Comapnies() {
     </>
   );
 }
+
