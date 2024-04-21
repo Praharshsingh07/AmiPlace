@@ -2,23 +2,23 @@ import React from "react";
 
 export default function NavBar() {
   return (
-    <nav className="border-b-[0.2px] bg-white border-black py-0 fixed right-0 top-0 left-0 flex">
-      <h1 className=" text-black py-3 ml-4 text-xl font-extrabold">AmiPlace</h1>
+    <nav className="border-b-[1px] bg-black border-gray-500 py-0 fixed right-0 top-0 left-0 flex">
+      <h1 className=" text-white py-3 ml-4 text-xl font-extrabold">AmiPlace</h1>
       <ul className="flex ml-[830px]">
-        <li className="text-black font-bold border-b-4 border-white hover:border-[#1E4E72] hover:text-[#1E4E72] hover:duration-500 py-3 ">
+        <li className="text-white font-bold border-b-4 border-black hover:border-[#85AD8A] hover:text-[#85AD8A] hover:duration-500 py-3 ">
           Community
         </li>
-        <li className="ml-10 text-black font-bold border-b-4 border-white hover:border-[#1E4E72] hover:text-[#1E4E72] hover:duration-500 py-3">
+        <li className="ml-10 text-white font-bold border-b-4 border-black hover:border-[#85AD8A] hover:text-[#85AD8A] hover:duration-500 py-3">
           Companies
         </li>
-        <li className="ml-10 mt-3 text-black font-bold">Profile</li>
+        <li className="ml-10 mt-3 text-white font-bold">Profile</li>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
           stroke-width="1.5"
           stroke="currentColor"
-          className="w-5 ml-1 text-black mb-1"
+          className="w-5 ml-1 text-white mb-1"
         >
           <path
             stroke-linecap="round"
@@ -30,3 +30,4 @@ export default function NavBar() {
     </nav>
   );
 }
+
