@@ -14,9 +14,9 @@ export default function CompanyDetails() {
   ];
   return (
     <>
-      <div className="bg-black text-white">
+      <div className="">
         <div className="border-[1px] h-[100px] border-gray-500 mt-[53px] mx-3 mb-[5px] bg-gradient-to-r from-[#3E6F90] via-[#80A4A0] to-[#85AD88]">
-          <div className="bg-black mt-8 h-[66.5px] flex">
+          <div className=" mt-8 h-[66.5px] flex">
             <img
               src="Logos/amazon-logo-2400x2400-20223105-2.png"
               alt=""

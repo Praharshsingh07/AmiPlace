@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 export default function CompanyCard(props) {
   return (
-    <div className="bg-black text-white border-[1px] border-white w-[823px] mb-5 mr-5 p-5 rounded hover:shadow-md hover:shadow-gray-300 hover:duration-500">
+    <div className="border-[1px] border-gray-300  w-[823px] mb-5 mr-5 p-5 rounded hover:shadow-xl hover:shadow-gray-300 hover:duration-500">
       <div className="flex">
         <img
           src={props.image}

@@ -17,8 +17,10 @@ const Post = ({
   content,
   likes,
   liked,
+  timeAgo,
 }) => {
   const dispatch = useDispatch();
+  // console.log(postId);
 
   const [threeDots, setThreeDots] = useState(false);
   const [isPostClicked, setIsPostClicked] = useState(false);
@@ -41,7 +43,7 @@ const Post = ({
     setThreeDots(false);
   };
   return (
-    <div className="relative postContainer px-5 border-b-[1px] border-gray-300 hover:bg-gray-200 min-h-10 bg-white">
+    <div className="relative postContainer px-5 border-b-[1px] border-gray-300 hover:bg-gray-100 min-h-10 bg-white">
       <div className="postHeader flex justify-between">
         <div className="userInfo flex space-x-2 my-2 ">
           <img
@@ -55,7 +57,7 @@ const Post = ({
           </div>
         </div>
         <div className=" mt-4 flex space-x-1 opacity-55">
-          <span className="addedTimeAgo text-sm mt-1">8h</span>
+          <span className="addedTimeAgo text-sm mt-1">{timeAgo} </span>
           <div
             className="postSettings rounded-full h-7 p-1 hover:bg-white"
             onClick={() => handleThreeDots()}
