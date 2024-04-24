@@ -6,6 +6,7 @@ import Header from "../Header";
 import BlogsContainer from "./Blog/BlogsContainer";
 import PostListContainer from "./Post/PostListContainer";
 import RecentUpdates from "./Recent Updates/RecentUpdates";
+import CommunityFooter from "../CommunityFooter";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -25,7 +26,10 @@ const Dashboard = () => {
       <div className="flex">
         <BlogsContainer />
         <PostListContainer />
-        <RecentUpdates />
+        <div>
+          <RecentUpdates />
+          <CommunityFooter />
+        </div>
       </div>
       <a
         href="#"

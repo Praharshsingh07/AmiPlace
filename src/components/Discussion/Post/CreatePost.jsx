@@ -4,6 +4,15 @@ import { FcDeleteRow } from "react-icons/fc";
 import { BsImage } from "react-icons/bs";
 import { createPostActions } from "../../../store/createPostSlice";
 import { postsAction } from "../../../store/postsSlice";
+import {
+  getDocs,
+  addDoc,
+  collection,
+  serverTimestamp,
+  orderBy,
+  query,
+} from "firebase/firestore";
+import { db } from "../../../firebase.config";
 
 const CreatePost = () => {
   const { userData } = useSelector((state) => state.userDetails);
@@ -25,7 +34,7 @@ const CreatePost = () => {
   const handleDelete = () => {
     dispatch(createPostActions.createPost());
   };
-  const handlePost = () => {
+  const handlePost = async () => {
     const postContent = postContentInput.current.value;
     if (postContent != "") {
       const newPost = {
@@ -38,15 +47,40 @@ const CreatePost = () => {
         content: postContent,
         likes: 0,
         liked: false,
+        createdAt: serverTimestamp(),
+        comments: [],
       };
-      dispatch(postsAction.addPost(newPost));
+      try {
+        const docRef = await addDoc(collection(db, "post"), newPost);
+        // console.log("Document written with ID: ", docRef.id);
+      } catch (e) {
+        console.error("Error adding document: ", e);
+      }
+
+      const reloadPost = [];
+      try {
+        const postQuery = query(
+          collection(db, "post"),
+          orderBy("createdAt", "desc")
+        );
+        const querySnapshot = await getDocs(postQuery);
+        querySnapshot.forEach((post) => {
+          reloadPost.push({ ...post.data(), id: post.id }); // Include the document ID
+        });
+        dispatch(postsAction.addPost(reloadPost));
+      } catch (e) {
+        console.error("Error adding document: ", e);
+      }
+
       dispatch(createPostActions.createPost());
+      // location.reload();
     } else {
       alert("Please add content in your post");
     }
   };
+
   return (
-    <div className="createPostContainer border-[1px] border-gray-300 rounded-lg   p-2 m-3">
+    <div className="createPostContainer border-[1px] border-gray-300 rounded-lg p-2 m-3">
       <div className="create-a-post flex justify-center items-center h-10 border-b-[1px]">
         <h1 className="text-xl font-semibold mb-2">Create a post</h1>
       </div>

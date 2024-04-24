@@ -50,7 +50,6 @@ const FullPost = ({ postId }) => {
                 {post.userName}
               </span>
               <span className="yearInfo opacity-60 text-sm">
-                {" "}
                 ~ {post.yearInfo}
               </span>
             </div>
@@ -132,8 +131,8 @@ const FullPost = ({ postId }) => {
           </div>
         </div>
       </div>
-      <CommentUtil yourImg={yourImg} />
-      <CommentSection />
+      <CommentUtil yourImg={yourImg} postId={postId} />
+      <CommentSection postId={postId} />
     </>
   );
 };

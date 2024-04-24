@@ -7,6 +7,8 @@ import Dashboard from "../Discussion/Dashboard";
 import { AuthContext } from "./AuthContext";
 import PrivateRoute from "./PrivateRoute";
 import EmailVerify from "./email";
+import Companies from "../Companies/Companies";
+import CompanyDetails from "../Companies/CompanyDetails";
 
 const Router = () => {
   const { currentUser } = useContext(AuthContext);
@@ -32,6 +34,8 @@ const Router = () => {
           </PrivateRoute>
         }
       />
+      <Route path="/companies" element={<Companies />}></Route>
+      <Route path="/details" element={<CompanyDetails />}></Route>
     </Routes>
   );
 };
