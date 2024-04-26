@@ -1,7 +1,7 @@
 import FullPost from "./FullPost";
 import { IoIosArrowBack } from "react-icons/io";
 
-const PostOverlay = ({ isOpen, onClose, postId }) => {
+const PostOverlay = ({ isOpen, onClose, postIndex, timeAgo }) => {
   return (
     <>
       {isOpen ? (
@@ -27,7 +27,7 @@ const PostOverlay = ({ isOpen, onClose, postId }) => {
                 />
               </>
             </div>
-            <FullPost postId={postId} />
+            <FullPost postIndex={postIndex} timeAgo={timeAgo} />
           </div>
         </div>
       ) : null}

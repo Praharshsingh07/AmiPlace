@@ -3,7 +3,7 @@ import { BsImage } from "react-icons/bs";
 import { useDispatch } from "react-redux";
 import { postsAction } from "../../../store/postsSlice";
 
-const CommentUtil = ({ postId, yourImg }) => {
+const CommentUtil = ({ postIndex, yourImg }) => {
   const dispatch = useDispatch();
 
   const commentInput = useRef("");
@@ -33,7 +33,7 @@ const CommentUtil = ({ postId, yourImg }) => {
       commentImg: commentImageUrl,
     };
     dispatch(
-      postsAction.addComment({ postId: postId, newComment: newComment })
+      postsAction.addComment({ postIndex: postIndex, newComment: newComment })
     );
     setCommentImageUrl("");
     commentInput.current.value = "";

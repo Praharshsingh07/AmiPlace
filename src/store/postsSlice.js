@@ -9,11 +9,11 @@ try {
   querySnapshot.forEach((post) => {
     fireInitPosts.push({ ...post.data(), id: post.id }); // Include the document ID
   });
-  dispatch(postsAction.addPost(reloadPost));
+  console.log("times");
 } catch (e) {
   console.error("Error adding document: ", e);
 }
-console.log(fireInitPosts);
+// console.log(fireInitPosts);
 
 const postsSlice = createSlice({
   name: "posts",
@@ -22,34 +22,21 @@ const postsSlice = createSlice({
   },
   reducers: {
     addPost: (state, action) => {
-      // state.initialPosts.unshift(action.payload);
-      // state.initialPosts.forEach((item) => {
-      //   item.postId++;
-      // });
       state.initialPosts = [...action.payload];
-    },
-
-    deletePost: (state, action) => {
-      const newPostList = state.initialPosts.filter(
-        (post) => post.postId != action.payload
-      );
-      for (let i = action.payload; i < newPostList.length; i++) {
-        newPostList[i].postId--;
-      }
-      state.initialPosts = newPostList;
     },
     Liked: (state, action) => {
       if (action.payload.like) {
-        state.initialPosts[action.payload.postId].liked = action.payload.like;
-        state.initialPosts[action.payload.postId].likes++;
+        state.initialPosts[action.payload.postIndex].liked =
+          action.payload.like;
+        state.initialPosts[action.payload.postIndex].likes++;
       } else {
-        state.initialPosts[action.payload.postId].liked = action.payload.like;
-        state.initialPosts[action.payload.postId].likes--;
+        state.initialPosts[action.payload.postIndex].liked =
+          action.payload.like;
+        state.initialPosts[action.payload.postIndex].likes--;
       }
     },
     addComment: (state, action) => {
-      // console.log(action.payload.postId, action.payload.newComment);
-      state.initialPosts[action.payload.postId].comments.unshift(
+      state.initialPosts[action.payload.postIndex].comments.unshift(
         action.payload.newComment
       );
     },

@@ -9,9 +9,9 @@ import useSound from "use-sound";
 import CommentUtil from "./CommentUtil";
 import CommentSection from "./CommentSection";
 
-const FullPost = ({ postId }) => {
+const FullPost = ({ postIndex, timeAgo }) => {
   const dispatch = useDispatch();
-  const post = useSelector((store) => store.posts.initialPosts[postId]);
+  const post = useSelector((store) => store.posts.initialPosts[postIndex]);
   const yourImg = useSelector((store) => store.userDetails.userData.imgPath);
 
   const liked = post.liked;
@@ -29,10 +29,10 @@ const FullPost = ({ postId }) => {
     if (newLikeState) {
       sound();
     }
-    dispatch(postsAction.Liked({ postId: postId, like: newLikeState }));
+    dispatch(postsAction.Liked({ postIndex: postIndex, like: newLikeState }));
   };
   const handleDeletePost = () => {
-    dispatch(postsAction.deletePost(postId));
+    dispatch(postsAction.deletePost(postIndex));
     setThreeDots(false);
   };
   return (
@@ -55,7 +55,7 @@ const FullPost = ({ postId }) => {
             </div>
           </div>
           <div className=" mt-4 flex space-x-1 opacity-55">
-            <span className="addedTimeAgo text-sm mt-1">8h</span>
+            <span className="addedTimeAgo text-sm mt-1">{timeAgo}</span>
             <div
               className="postSettings rounded-full h-7 p-1 hover:bg-white"
               onClick={() => handleThreeDots()}
@@ -103,11 +103,7 @@ const FullPost = ({ postId }) => {
             post.postImage == "" && "hidden"
           } mb-4 border-[1px] border-gray-500 w-fit ml-8`}
         >
-          <img
-            src={post.postImage}
-            alt=""
-            className=" min-w-72 max-w-fit h-96"
-          />
+          <img src={post.postImage} alt="" className=" min-w-72 max-w-80" />
         </div>
         <div className="recations flex space-x-10">
           <div className="like ml-5 flex space-x-1 mb-3">
@@ -131,8 +127,8 @@ const FullPost = ({ postId }) => {
           </div>
         </div>
       </div>
-      <CommentUtil yourImg={yourImg} postId={postId} />
-      <CommentSection postId={postId} />
+      <CommentUtil yourImg={yourImg} postIndex={postIndex} />
+      <CommentSection postIndex={postIndex} />
     </>
   );
 };

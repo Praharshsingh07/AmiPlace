@@ -6,7 +6,8 @@ const blogDataSlice = createSlice({
     blogs: [
       {
         blogId: 0,
-        blogLink: "#",
+        blogLink:
+          "https://in.indeed.com/career-advice/interviewing/how-to-crack-interview",
         blogDisplayText: "How to crack any interview",
         blogKey: "b1",
       },
