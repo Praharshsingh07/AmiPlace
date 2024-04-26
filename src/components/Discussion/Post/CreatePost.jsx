@@ -15,10 +15,11 @@ import {
 import { db } from "../../../firebase.config";
 
 const CreatePost = () => {
+  const dispatch = useDispatch();
   const { userData } = useSelector((state) => state.userDetails);
   const postContentInput = useRef();
-  const [imageUrl, setImageUrl] = useState("");
 
+  const [imageUrl, setImageUrl] = useState("");
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -29,16 +30,15 @@ const CreatePost = () => {
       reader.readAsDataURL(file);
     }
   };
-  const dispatch = useDispatch();
 
   const handleDelete = () => {
     dispatch(createPostActions.createPost());
   };
+
   const handlePost = async () => {
     const postContent = postContentInput.current.value;
     if (postContent != "") {
       const newPost = {
-        postKey: Math.random() * (1000000000 - 1) + 1,
         postId: -1,
         userImage: userData.imgPath,
         postImage: imageUrl,
@@ -50,13 +50,13 @@ const CreatePost = () => {
         createdAt: serverTimestamp(),
         comments: [],
       };
+      // adding post in firebase collection~(post)
       try {
         const docRef = await addDoc(collection(db, "post"), newPost);
-        // console.log("Document written with ID: ", docRef.id);
       } catch (e) {
         console.error("Error adding document: ", e);
       }
-
+      // fetching posts from firebase collection~(post)
       const reloadPost = [];
       try {
         const postQuery = query(
@@ -71,7 +71,6 @@ const CreatePost = () => {
       } catch (e) {
         console.error("Error adding document: ", e);
       }
-
       dispatch(createPostActions.createPost());
       // location.reload();
     } else {

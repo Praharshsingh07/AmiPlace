@@ -1,4 +1,3 @@
-import classNames from "classnames";
 import { useDispatch, useSelector } from "react-redux";
 import { createPostActions } from "../../../store/createPostSlice";
 
@@ -13,7 +12,7 @@ const CreatePostIcon = () => {
   const imgPath = img;
 
   return (
-    <div className="createPostContainer border-b-[1px]  border-b-gray-300 flex items-center justify-center space-x-3 py-7 px-1   sticky top-16 z-20 bg-white rounded-t-md">
+    <div className="createPostContainer border-b-[1px]  border-b-gray-300 flex items-center justify-center space-x-3 py-7 px-1  sticky top-16 z-20 bg-white rounded-t-md">
       <div className="profileImg">
         <img
           className="rounded-full w-12 border-[3px] border-green-600"
@@ -22,7 +21,7 @@ const CreatePostIcon = () => {
         />
       </div>
       <div
-        className="inputContent border-[1px] border-solid border-gray-200 px-4 py-2 w-[70%] cursor-pointer"
+        className="inputContent border-[1px] border-solid border-gray-300 px-4 py-2 w-[70%] cursor-pointer rounded-sm"
         onClick={handleCreatePost}
       >
         <p className="text-[#a5a5a5]">Post as "Devansh Verma"</p>

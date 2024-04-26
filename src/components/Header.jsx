@@ -1,31 +1,12 @@
-import React, { useState, useEffect } from "react";
-import classNames from "classnames";
-import {Link} from "react-router-dom"
+import { Link } from "react-router-dom";
 const Header = () => {
   const path = "src/Media/logo.svg";
 
   return (
     <>
       <nav
-        className={classNames(
-          "sticky",
-          "z-30",
-          "top-0",
-          "left-0",
-          "w-full",
-          "transition",
-          "duration-[350ms]",
-          "navigation",
-          "flex",
-          "flex-col",
-          "md:flex-row",
-          "justify-between",
-          "items-center",
-          "border-b-[0.20px]",
-          "border-b-gray-500",
-          "h-16",
-          "bg-slate-200",
-        )}
+        className="sticky z-30 top-0 left-0 w-full transition duration-[350ms] navigation
+          flex flex-col md:flex-row justify-between items-center border-b-[0.20px] border-b-gray-500  bg-slate-200"
       >
         {/* Your navigation content here */}
         <div className="logo flex space-x-1 ml-5 my-3">

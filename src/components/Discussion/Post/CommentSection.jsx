@@ -1,9 +1,9 @@
 import { useSelector } from "react-redux";
 import Comment from "./Comment";
 
-const CommentSection = ({ postId }) => {
+const CommentSection = ({ postIndex }) => {
   const comments = useSelector(
-    (store) => store.posts.initialPosts[postId].comments
+    (store) => store.posts.initialPosts[postIndex].comments
   );
   return (
     <div className="comment-section-container">

@@ -230,7 +230,7 @@ const companies = [
     Round4: "Managerial + HR Interview",
   },
   {
-    NameOfCompany: "Yellow Class",
+    NameOfCompany: "Yellow className",
     ProfileOffered: "SDE - Mobile Flutter",
     Location: "Gurgaon",
     FunctionalArea: "B.Tech CSE",
@@ -315,7 +315,7 @@ const companies = [
     Round4: "HR Interview",
   },
   {
-    NameOfCompany: "Tata Class Edge",
+    NameOfCompany: "Tata className Edge",
     ProfileOffered: "Consultant",
     Location: "Pan India",
     FunctionalArea: "B.Tech CSE, IT",

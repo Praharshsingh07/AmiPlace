@@ -4,12 +4,24 @@ import { FcLike } from "react-icons/fc";
 import { FaRegComment } from "react-icons/fa";
 import { postsAction } from "../../../store/postsSlice";
 import { BsThreeDots } from "react-icons/bs";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import useSound from "use-sound";
 import PostOverlay from "./PostOverlay";
+import { db } from "../../../firebase.config";
+import {
+  getDocs,
+  collection,
+  query,
+  orderBy,
+  updateDoc,
+  deleteDoc,
+  doc,
+  getDoc,
+} from "firebase/firestore";
 
 const Post = ({
   postId,
+  postIndex,
   userImage,
   postImage,
   userName,
@@ -20,7 +32,9 @@ const Post = ({
   timeAgo,
 }) => {
   const dispatch = useDispatch();
-  // console.log(postId);
+  const userDataUserName = useSelector(
+    (store) => store.userDetails.userData.userName
+  );
 
   const [threeDots, setThreeDots] = useState(false);
   const [isPostClicked, setIsPostClicked] = useState(false);
@@ -31,16 +45,55 @@ const Post = ({
     setThreeDots(!threeDots);
   };
 
-  const handleLike = () => {
+  const handleLike = async () => {
+    // console.log(postId);
     const newLikeState = !liked;
     if (newLikeState) {
       sound();
     }
-    dispatch(postsAction.Liked({ postId: postId, like: newLikeState }));
+    dispatch(postsAction.Liked({ postIndex: postIndex, like: newLikeState }));
+    try {
+      const postRef = doc(db, "post", postId);
+      const postSnapshot = await getDoc(postRef);
+      const postData = postSnapshot.data();
+
+      // Update the likes count and the liked field
+      const updatedLikes = postData.liked
+        ? postData.likes - 1
+        : postData.likes + 1;
+      const updatedLiked = !postData.liked;
+
+      await updateDoc(postRef, {
+        likes: updatedLikes,
+        liked: updatedLiked,
+      });
+    } catch (error) {
+      console.error("Error removing document: ", error);
+    }
   };
-  const handleDeletePost = () => {
-    dispatch(postsAction.deletePost(postId));
-    setThreeDots(false);
+  // const handleLike = () => {
+
+  // };
+  const handleDeletePost = async () => {
+    try {
+      await deleteDoc(doc(db, "post", postId));
+      console.log("Document successfully deleted!");
+
+      // Refresh the post list after deletion
+      const reloadPost = [];
+      const postQuery = query(
+        collection(db, "post"),
+        orderBy("createdAt", "desc")
+      );
+      const querySnapshot = await getDocs(postQuery);
+      querySnapshot.forEach((post) => {
+        reloadPost.push({ ...post.data(), id: post.id });
+      });
+      dispatch(postsAction.addPost(reloadPost));
+      setThreeDots(false);
+    } catch (error) {
+      console.error("Error removing document: ", error);
+    }
   };
   return (
     <div className="relative postContainer px-5 border-b-[1px] border-gray-300 hover:bg-gray-100 min-h-10 bg-white">
@@ -59,7 +112,9 @@ const Post = ({
         <div className=" mt-4 flex space-x-1 opacity-55">
           <span className="addedTimeAgo text-sm mt-1">{timeAgo} </span>
           <div
-            className="postSettings rounded-full h-7 p-1 hover:bg-white"
+            className={`postSettings rounded-full h-7 p-1 hover:bg-white ${
+              userName != userDataUserName && "hidden"
+            }`}
             onClick={() => handleThreeDots()}
           >
             <BsThreeDots className="text-xl" />
@@ -105,7 +160,7 @@ const Post = ({
           postImage == "" && "hidden"
         } mb-4 border-[1px] border-gray-500 w-fit ml-8`}
       >
-        <img src={postImage} alt="" className=" min-w-72 max-w-fit h-96" />
+        <img src={postImage} alt="" className="max-w-80" />
       </div>
       <div className="recations flex space-x-10">
         <div className="like ml-5 flex space-x-1 mb-3">
@@ -118,7 +173,8 @@ const Post = ({
             <FcLike className="text-2xl" onClick={() => handleLike()} />
           )}
           <div className="likesCount text-sm text-gray-500 mt-[2px]">
-            {likes} Reactions
+            {likes}
+            {`${likes > 1 ? "Reactions" : likes == 0 ? "" : "Reaction"}`}
           </div>
         </div>
         <div
@@ -134,7 +190,8 @@ const Post = ({
       <PostOverlay
         isOpen={isPostClicked}
         onClose={() => setIsPostClicked(!isPostClicked)}
-        postId={postId}
+        postIndex={postIndex}
+        timeAgo={timeAgo}
       />
     </div>
   );
