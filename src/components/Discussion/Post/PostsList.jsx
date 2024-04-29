@@ -7,7 +7,6 @@ const PostsList = () => {
     const now = new Date().getTime();
     const postTime = timestamp.toDate().getTime();
     const diffTime = now - postTime;
-
     const minutes = Math.floor((diffTime / (1000 * 60)) % 60);
     const hours = Math.floor((diffTime / (1000 * 60 * 60)) % 24);
     const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
@@ -20,26 +19,32 @@ const PostsList = () => {
       return `${minutes}m`;
     }
   }
+
   const { initialPosts } = useSelector((store) => store.posts);
+  const userDataUserName = useSelector(
+    (store) => store.userDetails.userData.userName
+  );
+
   // console.log(initialPosts);
   return (
     <>
-      {initialPosts.map((post, Index) => (
+      {initialPosts.map((post, postIndex) => (
         <Post
           key={post.id}
           postId={post.id}
-          postIndex={Index}
+          postIndex={postIndex}
           userImage={post.userImage}
           postImage={post.postImage}
           userName={post.userName}
           yearInfo={post.yearInfo}
           content={post.content}
           likes={post.likes}
-          liked={post.liked}
+          likedByUsers={post.likedByUsers}
           timeAgo={getTimeDifference(post.createdAt)}
         />
       ))}
     </>
   );
 };
+
 export default PostsList;

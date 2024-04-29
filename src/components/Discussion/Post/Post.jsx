@@ -29,6 +29,7 @@ const Post = ({
   content,
   likes,
   liked,
+  likedByUsers,
   timeAgo,
 }) => {
   const dispatch = useDispatch();
@@ -46,29 +47,64 @@ const Post = ({
   };
 
   const handleLike = async () => {
-    // console.log(postId);
-    const newLikeState = !liked;
-    if (newLikeState) {
-      sound();
-    }
-    dispatch(postsAction.Liked({ postIndex: postIndex, like: newLikeState }));
     try {
       const postRef = doc(db, "post", postId);
       const postSnapshot = await getDoc(postRef);
       const postData = postSnapshot.data();
-
-      // Update the likes count and the liked field
-      const updatedLikes = postData.liked
-        ? postData.likes - 1
-        : postData.likes + 1;
-      const updatedLiked = !postData.liked;
-
-      await updateDoc(postRef, {
-        likes: updatedLikes,
-        liked: updatedLiked,
-      });
+  
+      if (postData) {
+        let likedByUsers;
+        if (postData.likedByUsers && typeof postData.likedByUsers === 'object') {
+          likedByUsers = new Map(Object.entries(postData.likedByUsers));
+        } else {
+          // Handle the case where likedByUsers is missing or has an incorrect data type
+          likedByUsers = new Map();
+        }
+  
+        // Check if the current user has already liked the post
+        const isLiked = likedByUsers.has(userDataUserName);
+  
+        let updatedLikes, updatedLikedByUsers;
+  
+        if (isLiked) {
+          // Unlike the post
+          updatedLikes = postData.likes - 1;
+          updatedLikedByUsers = new Map(likedByUsers);
+          updatedLikedByUsers.delete(userDataUserName);
+        } else {
+          // Like the post
+          updatedLikes = postData.likes + 1;
+          updatedLikedByUsers = new Map(likedByUsers);
+          updatedLikedByUsers.set(userDataUserName, true);
+        }
+  
+        const updatedLikedByUsersObj = Object.fromEntries(updatedLikedByUsers);
+  
+        await updateDoc(postRef, {
+          likes: updatedLikes,
+          likedByUsers: updatedLikedByUsersObj,
+        });
+  
+        // Declare and initialize reloadPost
+        const reloadPost = [];
+        const postQuery = query(collection(db, "post"), orderBy("createdAt", "desc"));
+        const querySnapshot = await getDocs(postQuery);
+        querySnapshot.forEach((post) => {
+          reloadPost.push({ ...post.data(), id: post.id });
+        });
+  
+        // Use reloadPost to update the posts in the Redux store
+        const updatedPosts = reloadPost.map((post) =>
+          post.id === postId
+            ? { ...post, likes: updatedLikes, likedByUsers: updatedLikedByUsers }
+            : post
+        );
+        dispatch(postsAction.addPost(updatedPosts));
+      } else {
+        console.error("Invalid post data structure");
+      }
     } catch (error) {
-      console.error("Error removing document: ", error);
+      console.error("Error updating document: ", error);
     }
   };
   // const handleLike = () => {
@@ -163,20 +199,17 @@ const Post = ({
         <img src={postImage} alt="" className="max-w-80" />
       </div>
       <div className="recations flex space-x-10">
-        <div className="like ml-5 flex space-x-1 mb-3">
-          {liked === false ? (
-            <FcLikePlaceholder
-              className="text-2xl"
-              onClick={() => handleLike()}
-            />
-          ) : (
-            <FcLike className="text-2xl" onClick={() => handleLike()} />
-          )}
-          <div className="likesCount text-sm text-gray-500 mt-[2px]">
-            {likes}
-            {`${likes > 1 ? "Reactions" : likes == 0 ? "" : "Reaction"}`}
-          </div>
-        </div>
+      <div className="like ml-5 flex space-x-1 mb-3">
+  {liked ? (
+    <FcLike className="text-2xl" onClick={handleLike} />
+  ) : (
+    <FcLikePlaceholder className="text-2xl" onClick={handleLike} />
+  )}
+  <div className="likesCount text-sm text-gray-500 mt-[2px]">
+    {likes}
+    {`${likes > 1 ? "Reactions" : likes === 0 ? "" : "Reaction"}`}
+  </div>
+</div>
         <div
           className="comment flex space-x-1 cursor-pointer p-0 hover:text-green-500"
           onClick={() => setIsPostClicked(true)}

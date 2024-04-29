@@ -39,6 +39,7 @@ const CreatePost = () => {
     const postContent = postContentInput.current.value;
     if (postContent != "") {
       const newPost = {
+        postKey: Math.random() * (1000000000 - 1) + 1,
         postId: -1,
         userImage: userData.imgPath,
         postImage: imageUrl,
@@ -46,8 +47,8 @@ const CreatePost = () => {
         yearInfo: userData.yearInfo,
         content: postContent,
         likes: 0,
-        liked: false,
-        createdAt: serverTimestamp(),
+        likedByUsers: new Map(), // Replace with a Map
+        timeStamp: firebase.database.ServerValue.TIMESTAMP,
         comments: [],
       };
       // adding post in firebase collection~(post)
