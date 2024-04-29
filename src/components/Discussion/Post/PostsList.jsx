@@ -2,7 +2,9 @@ import { useSelector } from "react-redux";
 import Post from "./Post";
 
 const PostsList = () => {
-  // console.log("Post List repainted");
+  const userNameData = useSelector(
+    (store) => store.userDetails.userData.userName
+  );
   function getTimeDifference(timestamp) {
     const now = new Date().getTime();
     const postTime = timestamp.toDate().getTime();
@@ -21,7 +23,7 @@ const PostsList = () => {
     }
   }
   const { initialPosts } = useSelector((store) => store.posts);
-  // console.log(initialPosts);
+
   return (
     <>
       {initialPosts.map((post, Index) => (
@@ -35,7 +37,7 @@ const PostsList = () => {
           yearInfo={post.yearInfo}
           content={post.content}
           likes={post.likes}
-          liked={post.liked}
+          liked={post.likedBy.hasOwnProperty(`${userNameData}`)}
           timeAgo={getTimeDifference(post.createdAt)}
         />
       ))}

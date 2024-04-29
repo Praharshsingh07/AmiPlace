@@ -18,6 +18,7 @@ import {
   doc,
   getDoc,
 } from "firebase/firestore";
+import LoadingCool2 from "../../LoadingCool2";
 
 const Post = ({
   postId,
@@ -35,50 +36,61 @@ const Post = ({
   const userDataUserName = useSelector(
     (store) => store.userDetails.userData.userName
   );
-
+  const [loading, setLoading] = useState(false);
+  const [localLiked, setLocalLiked] = useState(liked);
   const [threeDots, setThreeDots] = useState(false);
   const [isPostClicked, setIsPostClicked] = useState(false);
-
   const [sound] = useSound("src/Media/multi-pop-1-188165.mp3", { volume: 0.1 });
+
   const handleThreeDots = () => {
-    // toggle functionality
     setThreeDots(!threeDots);
   };
-
   const handleLike = async () => {
-    // console.log(postId);
+    // frontend logic
     const newLikeState = !liked;
+    setLocalLiked(newLikeState);
     if (newLikeState) {
       sound();
     }
-    dispatch(postsAction.Liked({ postIndex: postIndex, like: newLikeState }));
+    dispatch(
+      postsAction.Liked({
+        postIndex: postIndex,
+        like: newLikeState,
+        liker: userDataUserName,
+      })
+    );
+
+    // backend-logic
     try {
       const postRef = doc(db, "post", postId);
       const postSnapshot = await getDoc(postRef);
       const postData = postSnapshot.data();
 
       // Update the likes count and the liked field
-      const updatedLikes = postData.liked
-        ? postData.likes - 1
-        : postData.likes + 1;
-      const updatedLiked = !postData.liked;
-
+      let updatedLikes;
+      // Update likedBy map
+      let _likedBy = postData.likedBy;
+      if (liked) {
+        updatedLikes = postData.likes - 1;
+        delete _likedBy[`${userDataUserName}`];
+      } else {
+        updatedLikes = postData.likes + 1;
+        _likedBy[`${userDataUserName}`] = true;
+      }
+      // updating post obj
       await updateDoc(postRef, {
         likes: updatedLikes,
-        liked: updatedLiked,
+        likedBy: _likedBy,
       });
     } catch (error) {
       console.error("Error removing document: ", error);
     }
   };
-  // const handleLike = () => {
-
-  // };
   const handleDeletePost = async () => {
+    setLoading(true);
     try {
       await deleteDoc(doc(db, "post", postId));
       console.log("Document successfully deleted!");
-
       // Refresh the post list after deletion
       const reloadPost = [];
       const postQuery = query(
@@ -87,16 +99,22 @@ const Post = ({
       );
       const querySnapshot = await getDocs(postQuery);
       querySnapshot.forEach((post) => {
+        if (post.data().likedBy.userDataUserName) {
+          post.data().liked = true;
+        } else {
+          post.data().liked = false;
+        }
         reloadPost.push({ ...post.data(), id: post.id });
       });
       dispatch(postsAction.addPost(reloadPost));
-      setThreeDots(false);
     } catch (error) {
       console.error("Error removing document: ", error);
     }
+    setLoading(false);
+    setThreeDots(false);
   };
   return (
-    <div className="relative postContainer px-5 border-b-[1px] border-gray-300 hover:bg-gray-100 min-h-10 bg-white">
+    <div className="relative postContainer px-5 border-b-[1px] border-gray-300 md:hover:bg-gray-100 min-h-10 bg-white">
       <div className="postHeader flex justify-between">
         <div className="userInfo flex space-x-2 my-2 ">
           <img
@@ -121,9 +139,11 @@ const Post = ({
           </div>
         </div>
       </div>
+      {loading && <LoadingCool2 />}
+
       {/* Post Dropdown Settings */}
       <div
-        className={`absolute top-10 right-3 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none ${
+        className={`absolute top-10 right-3 z-10 mt-2 w-28 md:w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none ${
           threeDots ? "block" : "hidden"
         }`}
         role="menu"
@@ -164,7 +184,7 @@ const Post = ({
       </div>
       <div className="recations flex space-x-10">
         <div className="like ml-5 flex space-x-1 mb-3">
-          {liked === false ? (
+          {localLiked === false ? (
             <FcLikePlaceholder
               className="text-2xl"
               onClick={() => handleLike()}
@@ -174,7 +194,7 @@ const Post = ({
           )}
           <div className="likesCount text-sm text-gray-500 mt-[2px]">
             {likes}
-            {`${likes > 1 ? "Reactions" : likes == 0 ? "" : "Reaction"}`}
+            {`${likes > 1 ? " Reactions" : likes == 0 ? "" : " Reaction"}`}
           </div>
         </div>
         <div
