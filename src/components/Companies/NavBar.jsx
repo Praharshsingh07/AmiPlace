@@ -19,6 +19,7 @@ export default function NavBar() {
           stroke-width="1.5"
           stroke="currentColor"
           className="w-5 ml-1 mb-1"
+
         >
           <path
             stroke-linecap="round"

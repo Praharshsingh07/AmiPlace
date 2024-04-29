@@ -30,6 +30,7 @@ const Post = ({
   content,
   likes,
   liked,
+  likedByUsers,
   timeAgo,
 }) => {
   const dispatch = useDispatch();
@@ -82,8 +83,9 @@ const Post = ({
         likes: updatedLikes,
         likedBy: _likedBy,
       });
+
     } catch (error) {
-      console.error("Error removing document: ", error);
+      console.error("Error updating document: ", error);
     }
   };
   const handleDeletePost = async () => {

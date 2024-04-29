@@ -9,7 +9,6 @@ const PostsList = () => {
     const now = new Date().getTime();
     const postTime = timestamp.toDate().getTime();
     const diffTime = now - postTime;
-
     const minutes = Math.floor((diffTime / (1000 * 60)) % 60);
     const hours = Math.floor((diffTime / (1000 * 60 * 60)) % 24);
     const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
@@ -22,15 +21,15 @@ const PostsList = () => {
       return `${minutes}m`;
     }
   }
-  const { initialPosts } = useSelector((store) => store.posts);
 
+  const { initialPosts } = useSelector((store) => store.posts);
   return (
     <>
-      {initialPosts.map((post, Index) => (
+      {initialPosts.map((post, postIndex) => (
         <Post
           key={post.id}
           postId={post.id}
-          postIndex={Index}
+          postIndex={postIndex}
           userImage={post.userImage}
           postImage={post.postImage}
           userName={post.userName}
@@ -44,4 +43,5 @@ const PostsList = () => {
     </>
   );
 };
+
 export default PostsList;
