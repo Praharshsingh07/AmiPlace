@@ -1,9 +1,12 @@
 const LoadingState = () => {
   return (
-    <div role="status">
+    <div
+      role="status"
+      className="z-30 w-full h-full flex items-center justify-center"
+    >
       <svg
         aria-hidden="true"
-        className="w-10 h-10 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+        className="w-10 h-10 text-gray-200 animate-spin dark:text-gray-600 fill-black"
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"

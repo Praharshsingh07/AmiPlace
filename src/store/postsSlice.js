@@ -26,13 +26,15 @@ const postsSlice = createSlice({
     },
     Liked: (state, action) => {
       if (action.payload.like) {
-        state.initialPosts[action.payload.postIndex].liked =
-          action.payload.like;
         state.initialPosts[action.payload.postIndex].likes++;
+        state.initialPosts[action.payload.postIndex].likedBy[
+          `${action.payload.liker}`
+        ] = true;
       } else {
-        state.initialPosts[action.payload.postIndex].liked =
-          action.payload.like;
         state.initialPosts[action.payload.postIndex].likes--;
+        delete state.initialPosts[action.payload.postIndex].likedBy[
+          `${action.payload.liker}`
+        ];
       }
     },
     addComment: (state, action) => {

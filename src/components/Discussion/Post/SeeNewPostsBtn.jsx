@@ -21,6 +21,10 @@ const NewPostBtn = () => {
     } catch (e) {
       console.error("Error adding document: ", e);
     }
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
   return (
     <button
