@@ -22,7 +22,7 @@ const postsSlice = createSlice({
   },
   reducers: {
     addPost: (state, action) => {
-      state.initialPosts = [...action.payload];
+      state.initialPosts = action.payload;
     },
     Liked: (state, action) => {
       if (action.payload.like) {
@@ -41,9 +41,6 @@ const postsSlice = createSlice({
       state.initialPosts[action.payload.postIndex].comments.unshift(
         action.payload.newComment
       );
-    },
-    deleteComment: (state, action) => {
-      console.log("Comment deleted");
     },
   },
 });

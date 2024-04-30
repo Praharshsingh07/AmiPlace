@@ -48,7 +48,6 @@ const CreatePost = () => {
       userName: userData.userName,
       yearInfo: userData.yearInfo,
       content: postContent,
-      liked: false,
       likes: 0,
       likedBy: {},
       createdAt: serverTimestamp(),
@@ -90,10 +89,10 @@ const CreatePost = () => {
         </p> */}
         <div className="flex space-x-2 mb-2">
           <img
-            className="rounded-full w-8 border-[2px] border-green-600"
-            src="src/Media/images/my_img.jpeg"
+            className="rounded-full w-8 h-8 border-[2px] border-green-600"
+            src={userData.imgPath}
           />
-          <span className="font-medium mt-1">devanshVerma</span>
+          <span className="font-medium mt-1">{userData.userName}</span>
         </div>
       </div>
       <textarea

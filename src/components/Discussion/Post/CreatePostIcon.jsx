@@ -8,14 +8,15 @@ const CreatePostIcon = () => {
     dispatch(createPostActions.createPost());
   };
 
-  const img = useSelector((store) => store.userDetails.userData.imgPath);
-  const imgPath = img;
+  const userData = useSelector((store) => store.userDetails.userData);
+  const imgPath = userData.imgPath;
+  const userName = userData.userName;
 
   return (
     <div className="createPostContainer border-b-[1px]  border-b-gray-300 flex items-center justify-center space-x-3 py-7 px-1  sticky top-16 z-20 bg-white rounded-t-md">
       <div className="profileImg">
         <img
-          className="rounded-full w-12 border-[3px] border-green-600"
+          className="rounded-full w-12 h-12 border-[3px] border-green-600"
           src={`${imgPath}`}
           alt="your_pic"
         />
@@ -24,7 +25,7 @@ const CreatePostIcon = () => {
         className="inputContent border-[1px] border-solid border-gray-300 px-4 py-2 w-[70%] cursor-pointer rounded-sm"
         onClick={handleCreatePost}
       >
-        <p className="text-[#a5a5a5]">Post as "Devansh Verma"</p>
+        <p className="text-[#a5a5a5]">Post as {`"${userName}"`}</p>
       </div>
     </div>
   );

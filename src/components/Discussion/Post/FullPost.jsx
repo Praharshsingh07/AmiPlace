@@ -9,7 +9,7 @@ import useSound from "use-sound";
 import CommentUtil from "./CommentUtil";
 import CommentSection from "./CommentSection";
 
-const FullPost = ({ postIndex, timeAgo }) => {
+const FullPost = ({ postIndex, timeAgo, postId }) => {
   const dispatch = useDispatch();
   const post = useSelector((store) => store.posts.initialPosts[postIndex]);
   const yourImg = useSelector((store) => store.userDetails.userData.imgPath);
@@ -127,7 +127,7 @@ const FullPost = ({ postIndex, timeAgo }) => {
           </div>
         </div>
       </div>
-      <CommentUtil yourImg={yourImg} postIndex={postIndex} />
+      <CommentUtil yourImg={yourImg} postIndex={postIndex} postId={postId} />
       <CommentSection postIndex={postIndex} />
     </>
   );
