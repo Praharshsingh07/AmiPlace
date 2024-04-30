@@ -4,6 +4,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../../firebase.config";
 import { useNavigate, Navigate } from "react-router-dom";
 import signupAnimation from "../../animations/animation-2.json";
+import loadingAnimation from "../../animations/loadinganimation.json";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../Auth/AuthContext.jsx";
 
@@ -24,17 +25,17 @@ function Login() {
 
   const validateForm = () => {
     let errors = {};
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
+    const emailRegex = /^[\w\.-]+@s\.amity\.edu$/;
+  
     if (!formData.email) {
       errors.email = "Email is required";
     } else if (!emailRegex.test(formData.email)) {
-      errors.email = "Invalid email address";
+      errors.email = "Invalid email address. Please Use your Amity Email ID";
     }
     if (!formData.password) {
       errors.password = "Password is required";
     }
-
+  
     return errors;
   };
 
@@ -71,7 +72,7 @@ function Login() {
     return <Navigate to="/dashboard" />;
   }
 
-   return (
+  return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white rounded-xl shadow-lg overflow-hidden">
         <div className="flex flex-col justify-center px-6 py-12 lg:px-8">
@@ -144,9 +145,19 @@ function Login() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                  className={`flex w-full justify-center rounded-md px-3 py-1.5 text-sm font-semibold leading-6 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${
+                    loading ? "bg-white" : "bg-blue-600 text-white hover:bg-blue-500"
+                  }`}
                 >
-                  {loading ? "Loading..." : "Login"}
+                  {loading ? (
+                    <Lottie
+                      animationData={loadingAnimation}
+                      loop={true}
+                      style={{ width: 100, height: 50 }}
+                    />
+                  ) : (
+                    "Login"
+                  )}
                 </button>
               </div>
             </form>
