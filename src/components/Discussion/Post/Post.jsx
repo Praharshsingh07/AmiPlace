@@ -40,7 +40,7 @@ const Post = ({
   const [localLiked, setLocalLiked] = useState(liked);
   const [threeDots, setThreeDots] = useState(false);
   const [isPostClicked, setIsPostClicked] = useState(false);
-  const [sound] = useSound("src/Media/multi-pop-1-188165.mp3", { volume: 0.1 });
+  const [sound] = useSound("src/Media/multi-pop-1-188165.mp3", { volume: 0.5 });
 
   const handleThreeDots = () => {
     setThreeDots(!threeDots);
@@ -120,7 +120,7 @@ const Post = ({
           <img
             src={userImage}
             alt="user_ki_photu"
-            className="rounded-full w-8 h-8 ml-2 mt-2"
+            className="rounded-full w-8 h-8 ml-2 mt-2 border-[0.5px]"
           />
           <div className="userName mt-2">
             <span className="text-base font-medium opacity-70">{userName}</span>
@@ -172,7 +172,7 @@ const Post = ({
           </a> */}
         </div>
       </div>
-      <p className="content border-l-2 border-gray-400 pl-3 mb-3 mx-6 py-0">
+      <p className="content border-l-2 border-gray-400 pl-3 mb-3 mx-6 py-0 overflow-hidden">
         {content}
       </p>
       <div
@@ -212,6 +212,7 @@ const Post = ({
         onClose={() => setIsPostClicked(!isPostClicked)}
         postIndex={postIndex}
         timeAgo={timeAgo}
+        postId={postId}
       />
     </div>
   );

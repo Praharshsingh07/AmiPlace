@@ -26,7 +26,7 @@ const Dashboard = () => {
       <div className="flex">
         <BlogsContainer />
         <PostListContainer />
-        <div>
+        <div className="w-[32%]">
           <RecentUpdates />
           <CommunityFooter />
         </div>

@@ -1,12 +1,25 @@
+import { async } from "@firebase/util";
 import { useRef, useState } from "react";
 import { BsImage } from "react-icons/bs";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { db } from "../../../firebase.config";
+import {
+  arrayUnion,
+  collection,
+  doc,
+  getDocs,
+  orderBy,
+  query,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
 import { postsAction } from "../../../store/postsSlice";
 
-const CommentUtil = ({ postIndex, yourImg }) => {
+const CommentUtil = ({ postIndex, yourImg, postId }) => {
   const dispatch = useDispatch();
+  const userData = useSelector((store) => store.userDetails.userData);
 
-  const commentInput = useRef("");
+  const [commentInput, setCommentInput] = useState("");
   const [commentImageUrl, setCommentImageUrl] = useState("");
 
   const handleFileChange = (event) => {
@@ -20,23 +33,42 @@ const CommentUtil = ({ postIndex, yourImg }) => {
     }
   };
   const handleCancel = () => {
-    commentInput.current.value = "";
+    setCommentInput("");
     setCommentImageUrl("");
   };
-  const handleAddComment = () => {
+  const handleAddComment = async () => {
     const newComment = {
-      commentKey: Math.random() * (1000000000 - 1) + 1,
-      userName: "user14",
-      userImage: "/src/Media/images/anush.jpeg",
-      yearInfo: "3rd year CSE",
-      commentContent: commentInput.current.value,
+      id: Math.random() * 1000000000,
+      userName: userData.userName,
+      userImage: userData.imgPath,
+      yearInfo: userData.yearInfo,
+      commentContent: commentInput,
       commentImg: commentImageUrl,
+      createdAt: new Date().getTime(),
     };
-    dispatch(
-      postsAction.addComment({ postIndex: postIndex, newComment: newComment })
-    );
-    setCommentImageUrl("");
-    commentInput.current.value = "";
+    try {
+      const postRef = doc(db, "post", postId);
+      await updateDoc(postRef, {
+        comments: arrayUnion(newComment),
+      });
+    } catch (error) {
+      console.error("Error adding comment:", error);
+    }
+    handleCancel();
+    const reloadPost = [];
+    try {
+      const postQuery = query(
+        collection(db, "post"),
+        orderBy("createdAt", "desc")
+      );
+      const querySnapshot = await getDocs(postQuery);
+      querySnapshot.forEach((post) => {
+        reloadPost.push({ ...post.data(), id: post.id }); // Include the document ID
+      });
+      dispatch(postsAction.addPost(reloadPost));
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
   };
 
   return (
@@ -50,9 +82,10 @@ const CommentUtil = ({ postIndex, yourImg }) => {
       </div>
       <div className="comment__Box w-full">
         <textarea
-          ref={commentInput}
           className="comment__input border-[1px] border-gray-400 w-full rounded-md resize-none focus:outline-none p-2"
           rows="3"
+          value={commentInput}
+          onChange={(e) => setCommentInput(e.target.value)}
           autoFocus
           placeholder="Add your comment..."
         ></textarea>
