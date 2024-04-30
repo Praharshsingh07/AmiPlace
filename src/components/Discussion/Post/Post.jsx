@@ -32,6 +32,7 @@ const Post = ({
   liked,
   likedByUsers,
   timeAgo,
+  comments,
 }) => {
   const dispatch = useDispatch();
   const userDataUserName = useSelector(
