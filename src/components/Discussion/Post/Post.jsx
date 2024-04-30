@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FcLikePlaceholder } from "react-icons/fc";
 import { FcLike } from "react-icons/fc";
 import { FaRegComment } from "react-icons/fa";
@@ -43,6 +43,7 @@ const Post = ({
   const [threeDots, setThreeDots] = useState(false);
   const [isPostClicked, setIsPostClicked] = useState(false);
   const [sound] = useSound("src/Media/multi-pop-1-188165.mp3", { volume: 0.5 });
+  const dropdownRef = useRef(null);
 
   const handleThreeDots = () => {
     setThreeDots(!threeDots);
@@ -84,7 +85,6 @@ const Post = ({
         likes: updatedLikes,
         likedBy: _likedBy,
       });
-
     } catch (error) {
       console.error("Error updating document: ", error);
     }
@@ -116,6 +116,17 @@ const Post = ({
     setLoading(false);
     setThreeDots(false);
   };
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setThreeDots(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
   return (
     <div className="relative postContainer px-5 border-b-[1px] border-gray-300 md:hover:bg-gray-100 min-h-10 bg-white">
       <div className="postHeader flex justify-between">
@@ -146,6 +157,7 @@ const Post = ({
 
       {/* Post Dropdown Settings */}
       <div
+        ref={dropdownRef}
         className={`absolute top-10 right-3 z-10 mt-2 w-28 md:w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none ${
           threeDots ? "block" : "hidden"
         }`}
