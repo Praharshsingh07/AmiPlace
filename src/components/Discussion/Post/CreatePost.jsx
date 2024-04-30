@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FcDeleteRow } from "react-icons/fc";
 import { BsImage } from "react-icons/bs";
@@ -20,17 +20,31 @@ const CreatePost = () => {
   const { userData } = useSelector((state) => state.userDetails);
   const [postContent, setPostContent] = useState("");
   const [loading, setLoading] = useState(false);
-
   const [imageUrl, setImageUrl] = useState("");
+  const createPostRef = useRef(null);
+
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      console.log(event.target);
+      if (createPostRef.current && !createPostRef.current.contains(event.target)) {
+        dispatch(createPostActions.createPost());
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [dispatch]);
+
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
-      // only after successfull reading of data by readAsDataURL() ,reader.onload runs and set that dataURL(imagefile content~ url in imageUrl state)
       reader.onload = (e) => {
         setImageUrl(e.target.result);
       };
-      // this runs first asynchronously ~ reads all file content as dataURL
       reader.readAsDataURL(file);
     }
   };
@@ -53,13 +67,13 @@ const CreatePost = () => {
       createdAt: serverTimestamp(),
       comments: [],
     };
-    // adding post in firebase collection~(post)
+
     try {
       const docRef = await addDoc(collection(db, "post"), newPost);
     } catch (e) {
       console.error("Error adding document: ", e);
     }
-    // fetching posts from firebase collection~(post)
+
     const reloadPost = [];
     try {
       const postQuery = query(
@@ -68,18 +82,19 @@ const CreatePost = () => {
       );
       const querySnapshot = await getDocs(postQuery);
       querySnapshot.forEach((post) => {
-        reloadPost.push({ ...post.data(), id: post.id }); // Include the document ID
+        reloadPost.push({ ...post.data(), id: post.id });
       });
       dispatch(postsAction.addPost(reloadPost));
     } catch (e) {
       console.error("Error adding document: ", e);
     }
+
     setLoading(false);
     dispatch(createPostActions.createPost());
   };
 
   return (
-    <div className="createPostContainer border-[1px] border-gray-300 rounded-lg p-2 m-3">
+    <div ref={createPostRef} className="createPostContainer border-[1px] border-gray-300 rounded-lg p-2 m-3">
       <div className="create-a-post flex justify-center items-center h-10">
         <h1 className="text-xl font-semibold">Create a post</h1>
       </div>

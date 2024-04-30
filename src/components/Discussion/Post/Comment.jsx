@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { BsThreeDots } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -29,9 +29,12 @@ const Comment = ({
     (store) => store.userDetails.userData.userName
   );
   const [threeDots, setThreeDots] = useState(false);
+  const dropdownRef = useRef(null);
+
   const handleThreeDots = () => {
     setThreeDots(!threeDots);
   };
+
   const fetchFirePosts = async () => {
     const reloadPost = [];
     try {
@@ -41,24 +44,23 @@ const Comment = ({
       );
       const querySnapshot = await getDocs(postQuery);
       querySnapshot.forEach((post) => {
-        reloadPost.push({ ...post.data(), id: post.id }); // Include the document ID
+        reloadPost.push({ ...post.data(), id: post.id });
       });
       dispatch(postsAction.addPost(reloadPost));
     } catch (e) {
       console.error("Error adding document: ", e);
     }
   };
+
   const handleDeleteComment = async () => {
     const postRef = doc(db, "post", postId);
     const postSnapshot = await getDoc(postRef);
 
-    // Find the comment you want to delete based on the ID
     const commentQuery = postSnapshot
       .data()
       .comments.find((comment) => comment.id === id);
 
     if (commentQuery) {
-      // Update the document, removing the comment from the "comments" array
       updateDoc(postRef, {
         comments: arrayRemove(commentQuery),
       }).catch((error) => {
@@ -70,6 +72,24 @@ const Comment = ({
     fetchFirePosts();
     handleThreeDots();
   };
+
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target)
+      ) {
+        setThreeDots(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
+
   return (
     <div className=" relative comment bg-gray-100 w-full border-b-[1px] border-b-gray-400">
       <div className="userInfo space-x-2 flex justify-between">
@@ -90,15 +110,16 @@ const Comment = ({
           <span className="addedTimeAgo text-sm mt-1">{timeAgo} </span>
           <div
             className={`postSettings rounded-full h-7 p-1 hover:bg-white ${
-              userName != userDataUserName && "hidden"
+              userName !== userDataUserName && "hidden"
             }`}
-            onClick={() => handleThreeDots()}
+            onClick={handleThreeDots}
           >
             <BsThreeDots className="text-xl" />
           </div>
         </div>
       </div>
       <div
+        ref={dropdownRef}
         className={`absolute top-5 right-3 z-10 mt-2 w-20 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none ${
           threeDots ? "block" : "hidden"
         }`}
@@ -117,15 +138,6 @@ const Comment = ({
           >
             Delete
           </div>
-          {/* <a
-            href="#"
-            className="text-gray-700 block px-4 py-2 text-sm"
-            role="menuitem"
-            tabIndex="-1"
-            id="menu-item-1"
-          >
-            Support
-          </a> */}
         </div>
       </div>
       <p className="comment-content opacity-85 ml-12 pb-3  mr-8 pr-0 ">
