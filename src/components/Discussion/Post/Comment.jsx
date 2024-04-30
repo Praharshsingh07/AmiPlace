@@ -75,10 +75,7 @@ const Comment = ({
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setThreeDots(false);
       }
     };
