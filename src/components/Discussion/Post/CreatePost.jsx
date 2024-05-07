@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FcDeleteRow } from "react-icons/fc";
 import { BsImage } from "react-icons/bs";
+import { FcCheckmark } from "react-icons/fc";
 import { createPostActions } from "../../../store/createPostSlice";
 import { postsAction } from "../../../store/postsSlice";
 import {
@@ -26,7 +27,10 @@ const CreatePost = () => {
   useEffect(() => {
     const handleOutsideClick = (event) => {
       console.log(event.target);
-      if (createPostRef.current && !createPostRef.current.contains(event.target)) {
+      if (
+        createPostRef.current &&
+        !createPostRef.current.contains(event.target)
+      ) {
         dispatch(createPostActions.createPost());
       }
     };
@@ -37,6 +41,12 @@ const CreatePost = () => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
   }, [dispatch]);
+
+  const handleImageInput = () => {
+    if (imageUrl) {
+      setImageUrl("");
+    }
+  };
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -94,7 +104,10 @@ const CreatePost = () => {
   };
 
   return (
-    <div ref={createPostRef} className="createPostContainer border-[1px] border-gray-300 rounded-lg p-2 m-3">
+    <div
+      ref={createPostRef}
+      className="createPostContainer border-[1px] border-gray-300 rounded-lg p-2 m-3"
+    >
       <div className="create-a-post flex justify-center items-center h-10">
         <h1 className="text-xl font-semibold">Create a post</h1>
       </div>
@@ -122,8 +135,15 @@ const CreatePost = () => {
         <label
           htmlFor="imageInput"
           className="text-2xl ml-5 opacity-60 cursor-pointer"
+          onClick={handleImageInput}
         >
-          <BsImage />
+          {imageUrl ? (
+            <div className="flex gap-1 ml-3">
+              <FcCheckmark /> <span className="text-sm mt-1">selected</span>
+            </div>
+          ) : (
+            <BsImage className="ml-3" />
+          )}
         </label>
         <input
           id="imageInput"

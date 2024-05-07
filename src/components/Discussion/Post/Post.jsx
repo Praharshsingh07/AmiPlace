@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { FcLikePlaceholder } from "react-icons/fc";
 import { FcLike } from "react-icons/fc";
-import { FaRegComment } from "react-icons/fa";
+import { BsReply } from "react-icons/bs";
 import { postsAction } from "../../../store/postsSlice";
 import { BsThreeDots } from "react-icons/bs";
+import { FcApproval } from "react-icons/fc";
 import { useDispatch, useSelector } from "react-redux";
 import useSound from "use-sound";
 import PostOverlay from "./PostOverlay";
@@ -30,9 +31,7 @@ const Post = ({
   content,
   likes,
   liked,
-  likedByUsers,
   timeAgo,
-  comments,
 }) => {
   const dispatch = useDispatch();
   const userDataUserName = useSelector(
@@ -42,7 +41,7 @@ const Post = ({
   const [localLiked, setLocalLiked] = useState(liked);
   const [threeDots, setThreeDots] = useState(false);
   const [isPostClicked, setIsPostClicked] = useState(false);
-  const [sound] = useSound("src/Media/multi-pop-1-188165.mp3", { volume: 0.5 });
+  const [sound] = useSound("src/Media/multi-pop-1-188165.mp3", { volume: 0.2 });
   const dropdownRef = useRef(null);
 
   const handleThreeDots = () => {
@@ -121,6 +120,7 @@ const Post = ({
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setThreeDots(false);
       }
+      ``;
     };
     document.addEventListener("mousedown", handleOutsideClick);
     return () => {
@@ -136,9 +136,19 @@ const Post = ({
             alt="user_ki_photu"
             className="rounded-full w-8 h-8 ml-2 mt-2 border-[0.5px]"
           />
-          <div className="userName mt-2">
-            <span className="text-base font-medium opacity-70">{userName}</span>
-            <span className="yearInfo opacity-60 text-sm"> ~ {yearInfo}</span>
+          <div className="userName mt-2 flex gap-2">
+            <span className="text-base font-medium opacity-70 flex">
+              {userName}
+              {(userName === "devanshVerma" ||
+                userName === "PraharshRaj" ||
+                userName === "anush") && (
+                <FcApproval className="mt-[4px] ml-1 text-lg" />
+              )}
+            </span>
+            <span className="yearInfo opacity-60 text-sm mt-[3px]">
+              {" "}
+              ~ {yearInfo}
+            </span>
           </div>
         </div>
         <div className=" mt-4 flex space-x-1 opacity-55">
@@ -176,15 +186,6 @@ const Post = ({
           >
             Delete Post
           </div>
-          {/* <a
-            href="#"
-            className="text-gray-700 block px-4 py-2 text-sm"
-            role="menuitem"
-            tabIndex="-1"
-            id="menu-item-1"
-          >
-            Support
-          </a> */}
         </div>
       </div>
       <p className="content border-l-2 border-gray-400 pl-3 mb-3 mx-6 py-0 overflow-hidden">
@@ -213,12 +214,12 @@ const Post = ({
           </div>
         </div>
         <div
-          className="comment flex space-x-1 cursor-pointer p-0 hover:text-green-500"
+          className="comment flex space-x-1 cursor-pointer p-0 hover:text-blue-500 mb-1"
           onClick={() => setIsPostClicked(true)}
         >
-          <FaRegComment className="mt-[2px] opacity-55" />
-          <span className="text-sm text-gray-500 hover:text-green-600 font-medium">
-            Comment
+          <BsReply className="opacity-55 text-xl" />
+          <span className="mt-[1px] text-sm text-gray-500 hover:text-blue-600 font-normal">
+            Reply
           </span>
         </div>
       </div>
@@ -228,6 +229,7 @@ const Post = ({
         postIndex={postIndex}
         timeAgo={timeAgo}
         postId={postId}
+        liked={localLiked}
       />
     </div>
   );
