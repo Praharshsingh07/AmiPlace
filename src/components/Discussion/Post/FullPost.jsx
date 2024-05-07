@@ -21,7 +21,7 @@ import LoadingCool2 from "../../LoadingCool2";
 import CommentUtil from "./CommentUtil";
 import CommentSection from "./CommentSection";
 
-const FullPost = ({ postIndex, timeAgo, postId, liked }) => {
+const FullPost = ({ postIndex, timeAgo, postId, liked, likes }) => {
   const dispatch = useDispatch();
   const post = useSelector((store) => store.posts.initialPosts[postIndex]);
   const yourImg = useSelector((store) => store.userDetails.userData.imgPath);
@@ -204,14 +204,8 @@ const FullPost = ({ postIndex, timeAgo, postId, liked }) => {
               <FcLike className="text-2xl" onClick={() => handleLike()} />
             )}
             <div className="likesCount text-sm text-gray-500 mt-[2px]">
-              {post.likes}
-              {`${
-                post.likes > 1
-                  ? " Reactions"
-                  : post.likes == 0
-                  ? ""
-                  : " Reaction"
-              }`}
+              {likes}
+              {`${likes < 2 ? " Reaction" : " Reactions"}`}
             </div>
           </div>
           <div

@@ -33,7 +33,7 @@ const CompanyCard = ({
           </div>
         </div>
 
-        <div className="location-size-industry flex justify-between my-3">
+        <div className="hidden location-size-industry sm:flex justify-between my-3">
           <div className="location">
             <p className="font-bold">Location</p>
             <span className="text-gray-600">{Location}</span>
@@ -48,7 +48,7 @@ const CompanyCard = ({
           </div>
         </div>
 
-        <div className="role mt-3">
+        <div className="hidden sm:block role mt-3">
           <span className="font-bold">Profile Offered: </span>
           <span className="text-blue-700 font-semibold">{ProfileOffered}</span>
         </div>

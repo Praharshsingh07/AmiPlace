@@ -8,6 +8,7 @@ const PostOverlay = ({
   timeAgo,
   postId,
   liked,
+  likes,
 }) => {
   return (
     <>
@@ -39,6 +40,7 @@ const PostOverlay = ({
               timeAgo={timeAgo}
               postId={postId}
               liked={liked}
+              likes={likes}
             />
           </div>
         </div>

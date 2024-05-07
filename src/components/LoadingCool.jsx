@@ -2,7 +2,7 @@ const LoadingCool = () => {
   return (
     <div
       role="status"
-      className=" absolute inset-0 flex w-full items-center justify-center"
+      className="absolute inset-0 flex w-full h-full items-center justify-center"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
