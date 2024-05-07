@@ -13,7 +13,6 @@ const CompanyDetails = ({
   Round3,
   Round4,
   Website,
-  logo,
 }) => {
   return (
     <>
@@ -22,7 +21,7 @@ const CompanyDetails = ({
           class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
           onClick={onClose}
         >
-          <div class="relative w-full max-w-xl max-h-full bg-white rounded-lg shadow-lg">
+          <div class="relative w-full md:max-w-xl h-full md:max-h-full md:h-fit bg-white md:rounded-lg md:shadow-lg">
             <button
               class="absolute top-0 right-0 p-2 text-gray-600 hover:text-gray-800 focus:outline-none"
               onClick={onClose}
@@ -43,7 +42,7 @@ const CompanyDetails = ({
               </svg>
             </button>
             <div class="p-6">
-              <div class="grid grid-cols-3 grid-rows-4 gap-6">
+              <div class="md:grid md:grid-cols-3 md:grid-rows-4 md:gap-6">
                 <div class="col-span-3 mb-6">
                   <p class="text-lg font-semibold text-gray-800">
                     NameOfCompany:

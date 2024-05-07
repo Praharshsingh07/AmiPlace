@@ -1,7 +1,7 @@
-import { async } from "@firebase/util";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { BsImage } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
+import { FcCheckmark } from "react-icons/fc";
 import { db } from "../../../firebase.config";
 import {
   arrayUnion,
@@ -30,6 +30,11 @@ const CommentUtil = ({ postIndex, yourImg, postId }) => {
         setCommentImageUrl(e.target.result);
       };
       reader.readAsDataURL(file);
+    }
+  };
+  const handleCommentImageUrl = () => {
+    if (commentImageUrl) {
+      setCommentImageUrl("");
     }
   };
   const handleCancel = () => {
@@ -91,8 +96,15 @@ const CommentUtil = ({ postIndex, yourImg, postId }) => {
         ></textarea>
         <div className="comment__addControl flex justify-between mt-3">
           <div className="addImage">
-            <label htmlFor="addImage">
-              <BsImage className="mt-3" />
+            <label htmlFor="addImage" onClick={handleCommentImageUrl}>
+              {commentImageUrl ? (
+                <>
+                  <FcCheckmark />
+                  <span className="text-sm text-green-600">selected</span>
+                </>
+              ) : (
+                <BsImage className="mt-3" />
+              )}
             </label>
             <input
               type="file"

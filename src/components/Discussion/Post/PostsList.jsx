@@ -21,7 +21,27 @@ const PostsList = () => {
       return `${minutes}m`;
     }
   }
-
+  function formatLikeCount(count) {
+    // Check if the count is greater than 1 billion
+    if (count >= 1000000000) {
+      // Round the count to one decimal place and append "Billion"
+      return (count / 1000000000).toFixed(1) + "B";
+    }
+    // Check if the count is greater than 1 million
+    else if (count >= 1000000) {
+      // Round the count to one decimal place and append "M"
+      return (count / 1000000).toFixed(1) + "M";
+    }
+    // Check if the count is greater than 1000
+    else if (count >= 1000) {
+      // Round the count to one decimal place and append "K"
+      return (count / 1000).toFixed(1) + "K";
+    }
+    // If the count is less than 1000, return the count as is
+    else {
+      return count.toString();
+    }
+  }
   const { initialPosts } = useSelector((store) => store.posts);
   return (
     <>
@@ -35,7 +55,7 @@ const PostsList = () => {
           userName={post.userName}
           yearInfo={post.yearInfo}
           content={post.content}
-          likes={post.likes}
+          likes={formatLikeCount(post.likes)}
           liked={post.likedBy.hasOwnProperty(`${userNameData}`)}
           timeAgo={getTimeDifference(post.createdAt)}
         />

@@ -5,7 +5,7 @@ import PostsList from "./PostsList";
 const PostListContainer = () => {
   const { create } = useSelector((store) => store.createPost);
   return (
-    <div className="postListContainer w-[100%] md:max-w-[729px]  rounded-t-md h-[100%] md:border-[1px] border-x-[1px] border-b-[1px] border-gray-300 md:mt-10">
+    <div className="postListContainer w-full sm:mx-10 md:ml-5 md:mr-0 xl:mx-0 lg:max-w-[729px] rounded-t-md h-[100%] lg:border-[1px] border-x-[1px] border-b-[1px] border-gray-300 md:mt-10">
       {create == false ? <CreatePostIcon /> : <CreatePost />}
       <PostsList />
     </div>

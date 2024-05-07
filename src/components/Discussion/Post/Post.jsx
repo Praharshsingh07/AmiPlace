@@ -210,7 +210,7 @@ const Post = ({
           )}
           <div className="likesCount text-sm text-gray-500 mt-[2px]">
             {likes}
-            {`${likes > 1 ? " Reactions" : likes == 0 ? "" : " Reaction"}`}
+            {`${likes < 2 ? " Reaction" : " Reactions"}`}
           </div>
         </div>
         <div
@@ -230,6 +230,7 @@ const Post = ({
         timeAgo={timeAgo}
         postId={postId}
         liked={localLiked}
+        likes={likes}
       />
     </div>
   );

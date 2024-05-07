@@ -8,7 +8,7 @@ const CompaniesList = () => {
     (store) => store.companiesData.initialCompanies
   );
   return (
-    <div className="w-[55%] mr-10">
+    <div className="w-full md:w-[55%] lg:mr-10 mx-10 md:mx-5">
       {companiesData.map((company, Index) => (
         <CompanyCard
           key={nanoid()}

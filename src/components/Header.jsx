@@ -57,7 +57,7 @@ const Header = ({ HeaderClassNames }) => {
           <MdConstruction className="ml-2 mt-[5px] text-xl" />
         </li>
         <li className="list-none mx-3 my-2">
-          <Link to="#">Companies</Link>
+          <Link to="/companies">Companies</Link>
         </li>
       </div>
     </>
