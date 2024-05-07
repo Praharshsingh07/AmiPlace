@@ -1,55 +1,107 @@
-import React from "react";
-
-export default function CompanyDetails() {
-  const questions = [
-    "Given a sorted dictionary (array of words) of an alien language, find the order of characters in the language.",
-    "Given an array arr[] of size n, its prefix sum array is another array prefixSum[] of the same size, such that the value of prefixSum[i] is arr[0] + arr[1] + arr[2] … arr[i].",
-    "Given an array of integers, find the next biggest number.",
-    "Given an array of distinct integers arr, find all pairs of elements with the minimum absolute difference of any two elements.",
-    "Lowest Common ancestor in a Binary Search Tree and Binary Tree.",
-    "Implement a stack with push(), pop() and min() in O(1) time.",
-    "Reverse a linked list in groups of size k",
-    "Given two numbers represented by two linked lists, write a function that returns sum list",
-    "Rotate a matrix by 90 degree.",
-  ];
+import { FcLink } from "react-icons/fc";
+const CompanyDetails = ({
+  isOpen,
+  onClose,
+  companyName,
+  CTC,
+  Location,
+  ForBatch,
+  ProfileOffered,
+  FunctinalArea,
+  Round1,
+  Round2,
+  Round3,
+  Round4,
+  Website,
+  logo,
+}) => {
   return (
     <>
-      <div className="">
-        <div className="border-[1px] h-[100px] border-gray-500 mt-[53px] mx-3 mb-[5px] bg-gradient-to-r from-[#3E6F90] via-[#80A4A0] to-[#85AD88]">
-          <div className=" mt-8 h-[66.5px] flex">
-            <img
-              src="Logos/amazon-logo-2400x2400-20223105-2.png"
-              alt=""
-              className="w-[75px] h-[75px] border-[1px] border-gray-500 mt-[-21px] ml-3 bg-white"
-            />
-            <div className="ml-3 mt-[5px]">
-              <h1 className="font-extrabold text-xl">Amazon</h1>
-              <h3 className="">CTC offered: 19.75 LPA</h3>
+      {isOpen ? (
+        <div
+          class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+          onClick={onClose}
+        >
+          <div class="relative w-full max-w-xl max-h-full bg-white rounded-lg shadow-lg">
+            <button
+              class="absolute top-0 right-0 p-2 text-gray-600 hover:text-gray-800 focus:outline-none"
+              onClick={onClose}
+            >
+              <svg
+                class="h-6 w-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                ></path>
+              </svg>
+            </button>
+            <div class="p-6">
+              <div class="grid grid-cols-3 grid-rows-4 gap-6">
+                <div class="col-span-3 mb-6">
+                  <p class="text-lg font-semibold text-gray-800">
+                    NameOfCompany:
+                  </p>
+                  <a
+                    href={`${Website}`}
+                    class="font-semibold text-lg text-blue-600 flex gap-2"
+                    target={"_blank"}
+                  >
+                    <FcLink className="mt-[5px] text-xl" />
+                    {companyName}
+                    <span className="text-sm text-gray-400 mt-[6px]">
+                      visit
+                    </span>
+                  </a>
+                </div>
+                <div class="mb-4">
+                  <p class="font-semibold text-gray-800">ProfileOffered:</p>
+                  <p class="text-gray-600">{ProfileOffered}</p>
+                </div>
+                <div class="mb-4">
+                  <p class="font-semibold text-gray-800">Location:</p>
+                  <p class="text-gray-600">{Location}</p>
+                </div>
+                <div class="mb-4">
+                  <p class="font-semibold text-gray-800">FunctionalArea:</p>
+                  <p class="text-gray-600">{FunctinalArea}</p>
+                </div>
+                <div class="mb-4">
+                  <p class="font-semibold text-gray-800">AnnualCTC:</p>
+                  <p class="text-gray-600">{CTC}</p>
+                </div>
+                <div class="mb-4">
+                  <p class="font-semibold text-gray-800">ForBatch:</p>
+                  <p class="text-gray-600">{ForBatch}</p>
+                </div>
+                <div class="mb-4">
+                  <p class="font-semibold text-gray-800">Round1:</p>
+                  <p class="text-gray-600">{Round1}</p>
+                </div>
+                <div class="mb-4">
+                  <p class="font-semibold text-gray-800">Round2:</p>
+                  <p class="text-gray-600">{Round2}</p>
+                </div>
+                <div class="mb-4">
+                  <p class="font-semibold text-gray-800">Round3:</p>
+                  <p class="text-gray-600">{Round3}</p>
+                </div>
+                <div class="mb-4">
+                  <p class="font-semibold text-gray-800">Round4:</p>
+                  <p class="text-gray-600">{Round4}</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        <div className="border-[1px] border-gray-500 mt-[10px] mx-3">
-          <p className="ml-5 mt-3 mr-5 text-justify">
-            <span className="font-bold">Job Description :</span> A Software
-            Development Engineer (SDE) at Amazon typically works on designing,
-            developing, and maintaining software systems and applications. The
-            job description for an SDE at Amazon may include the following
-            responsibilities and qualifications which will be described in
-            attached PDF file forwarded by the university to all the eligible
-            students. <br /> <br />
-          </p>
-        </div>
-        <div className="mx-3 mt-3">
-          <h1 className="font-extrabold">PREVIOUSLY ASKED QUESTIONS</h1>
-          {questions.map((e, i) => {
-            return (
-              <h3 className="border-[0.1px] border-[#85AD8A] m-2 p-2 rounded-lg hover:shadow hover:shadow-gray-300 hover:duration-500">
-                {i + 1}. {e}
-              </h3>
-            );
-          })}
-        </div>
-      </div>
+      ) : null}
     </>
   );
-}
+};
+export default CompanyDetails;

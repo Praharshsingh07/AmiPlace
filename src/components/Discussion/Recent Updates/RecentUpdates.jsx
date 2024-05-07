@@ -1,11 +1,9 @@
 import { RiMessage3Fill } from "react-icons/ri";
-const RecentUpdates = () => {
+
+const RecentUpdates = ({ RecentUpdatesClassNames }) => {
   return (
-    <div
-      className="recentUpdatesContainer sticky top-[-205px] hidden md:block px-7 py-5 w-[87%] rounded-md m-5 bg-[#f7f7f7] border-[0.5px] border-gray-300
-    "
-    >
-      <h1 className="text-2xl font-bold mb-2">Recent Updates</h1>
+    <div className={RecentUpdatesClassNames}>
+      <h1 className="text-xl font-semibold mb-2">Recent Updates</h1>
       <ul className="border-t-[1px] border-t-gray-500 ">
         <li className="my-5 flex">
           <RiMessage3Fill />

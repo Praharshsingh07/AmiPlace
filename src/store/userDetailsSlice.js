@@ -4,7 +4,7 @@ const userDetailsSlice = createSlice({
   name: "userDetails",
   initialState: {
     userData: {
-      userName: "Amit mishra",
+      userName: "devanshVerma",
       imgPath: "/src/Media/images/my_img.jpeg",
       yearInfo: "3rd year CSE",
     },

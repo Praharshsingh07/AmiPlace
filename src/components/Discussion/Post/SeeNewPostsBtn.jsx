@@ -28,18 +28,15 @@ const NewPostBtn = () => {
     });
   };
   return (
-    <button
-      type="button"
-      className="relative rounded px-5 py-2.5 overflow-hidden group bg-green-500 hover:bg-gradient-to-r hover:from-green-500 hover:to-green-400 text-white hover:ring-2 hover:ring-offset-2 hover:ring-green-400 transition-all ease-out duration-300"
-      onClick={fetchNewPost}
-    >
-      <Lottie
-        animationData={loginloading}
-        loop={true}
-        style={{ width: 100, height: 50 }}
-      />
-      <span className="relative">Refresh</span>
-    </button>
+    <div className="flex justify-center items-center w-full mb-[-45px]">
+      <button
+        type="button"
+        className="bg-blue-500 w-fit py-2 px-3 rounded-md text-sm text-white hover:bg-blue-600"
+        onClick={fetchNewPost}
+      >
+        See new posts
+      </button>
+    </div>
   );
 };
 export default NewPostBtn;

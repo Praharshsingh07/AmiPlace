@@ -9,7 +9,6 @@ try {
   querySnapshot.forEach((post) => {
     fireInitPosts.push({ ...post.data(), id: post.id }); // Include the document ID
   });
-  console.log("times");
 } catch (e) {
   console.error("Error adding document: ", e);
 }
