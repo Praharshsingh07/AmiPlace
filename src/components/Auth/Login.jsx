@@ -26,7 +26,7 @@ function Login() {
   const validateForm = () => {
     let errors = {};
     const emailRegex = /^[\w\.-]+@s\.amity\.edu$/;
-  
+
     if (!formData.email) {
       errors.email = "Email is required";
     } else if (!emailRegex.test(formData.email)) {
@@ -35,7 +35,7 @@ function Login() {
     if (!formData.password) {
       errors.password = "Password is required";
     }
-  
+
     return errors;
   };
 
@@ -100,7 +100,7 @@ function Login() {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
                   />
                   {formErrors.email && (
                     <p className="text-red-500">{formErrors.email}</p>
@@ -133,7 +133,7 @@ function Login() {
                     value={formData.password}
                     onChange={handleChange}
                     required
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
                   />
                   {formErrors.password && (
                     <p className="text-red-500">{formErrors.password}</p>
@@ -146,7 +146,9 @@ function Login() {
                   type="submit"
                   disabled={loading}
                   className={`flex w-full justify-center rounded-md px-3 py-1.5 text-sm font-semibold leading-6 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${
-                    loading ? "bg-white" : "bg-blue-600 text-white hover:bg-blue-500"
+                    loading
+                      ? "bg-white"
+                      : "bg-blue-600 text-white hover:bg-blue-500"
                   }`}
                 >
                   {loading ? (
