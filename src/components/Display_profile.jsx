@@ -71,11 +71,11 @@ const Display_profile = () => {
           </div>
         </div>
 
-        {/* aside */}
+        {/* aside. */}
         <div className=" h-full flex flex-row w-4/5  gap-6 xsm:w-4/5 sm:w-4/5 md:w-4/5 lg:w-4/5 ">
           <div className=" flex flex-col h-4/5 w-1/5 sm:w-2/5 md:w-2/5 lg:w-2/5 xsm:w-2/5 border-solid rounded-xl bg-slate-50 shadow-lg ">
             <h2 className="m-3">Quick Links</h2>
-            <div className=" flex flex-col justify-around h-full gap-10 p-5 m-3  border-solid rounded-xl border-slate-200 border-2 bg-slate-50 ">
+            <div className=" flex flex-col justify-around h-full gap-10 p-5 m-3  border-solid rounded-xl border-slate-200 border-2 bg-slate-50">
               <button
                 // onClick={() => setIsOpen(true)}
                 className=" flex  justify-center border-blue-300 border-2 hover:bg-blue-500 
@@ -94,13 +94,13 @@ const Display_profile = () => {
                 className="flex  justify-center border-blue-300 border-2  hover:bg-blue-500 
               hover:border-2 hover:border-black rounded-lg p-3"
               >
-                certifications
+                Certifications
               </button>
               <button
                 className="flex  justify-center border-blue-300 border-2  hover:bg-blue-500 
               hover:border-2 hover:border-black rounded-lg p-3"
               >
-                interships
+                Interships
               </button>
               <button
                 className="flex  justify-center border-blue-300 border-2  hover:bg-blue-500 
