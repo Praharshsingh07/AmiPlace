@@ -1,22 +1,39 @@
 import React, { useRef } from "react";
+import { auth ,db} from "../firebase.config";
+import { collection, addDoc,setDoc,doc } from "firebase/firestore";
 import { useDispatch } from "react-redux";
+import { storeUserResume } from "../firebaseutlils";
+
 import { CertificationInfoAction } from "../store/features/Certification_info/Certification_Info";
+import { updateAndStoreUserData } from "../utils";
 
 const Cerification = () => {
   const dispatch = useDispatch();
   const CertificationNameInput = useRef();
-  const handlesubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const obj = {
-      certificationName: CertificationNameInput.current.value,
-    };
-    dispatch(CertificationInfoAction.Add(obj));
-    CertificationNameInput.current.value = "";
+    const certificationName = CertificationNameInput.current.value;
+  
+    try {
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        const userDocRef = doc(db, "users", currentUser.uid);
+        await setDoc(userDocRef, { certifications: certificationName }, { merge: true });
+        console.log('Certification added successfully');
+        await updateAndStoreUserData(obj, "certifications");
+        dispatch(CertificationInfoAction.HandleInputForm(certificationName));
+        CertificationNameInput.current.value = '';
+      } else {
+        console.log('User not authenticated');
+      }
+    } catch (error) {
+      console.error('Error adding certification:', error);
+    }
   };
   return (
     <>
       <form
-        onSubmit={handlesubmit}
+        onSubmit={handleSubmit}
         className="max-w-md mx-auto bg-white p-5 rounded-lg border-blue-400 border-solid border-2"
       >
         <h1 className="block text-2xl font-bold text-black pt-0 pl-2 p-6">

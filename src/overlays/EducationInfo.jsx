@@ -1,7 +1,9 @@
 import React from "react";
 import { useRef } from "react";
-import { useDispatch } from "react-redux";
-import { EducationInfoAction } from "../store/features/HigerEduInfo/HigerEduInfo.Slice";
+import { auth ,db} from "../firebase.config";
+import { collection, addDoc,setDoc,doc } from "firebase/firestore";
+import { storeUserResume } from "../firebaseutlils";
+import { updateAndStoreUserData } from "../utils";
 
 const EducationInfo = ({ showModal, onClose }) => {
   if (!showModal) return null;
@@ -14,31 +16,45 @@ const EducationInfo = ({ showModal, onClose }) => {
   const LinkedinUrlInput = useRef();
   const GitHubUrlInput = useRef();
 
-  const dispatch = useDispatch();
-
-  const handlesubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const obj = {
-      CourseName: CourseNameInput.current.value,
-      Specialization: SpecializationInput.current.value,
-      CGPA: CGPAInput.current.value,
-      CourseDuration: CourseDurationInput.current.value,
-      LinkedinUrl: LinkedinUrlInput.current.value,
-      GitHubUrl: GitHubUrlInput.current.value,
+      CourseName: CourseNameInput.current?.value || '',
+      Specialization: SpecializationInput.current?.value || '',
+      CollegeName: CollegeNameInput.current?.value || '',
+      CGPA: CGPAInput.current?.value || '',
+      CourseDuration: CourseDurationInput.current?.value || '',
+      LinkedinUrl: LinkedinUrlInput.current?.value || '',
+      GitHubUrl: GitHubUrlInput.current?.value || '',
     };
-    dispatch(EducationInfoAction.HandleInputForm2(obj));
-    CourseNameInput.current.value = "";
-    SpecializationInput.current.value = "";
-    CGPAInput.current.value = "";
-    CourseDurationInput.current.value = "";
-    LinkedinUrlInput.current.value = "";
-    GitHubUrlInput.current.value = "";
+  
+    try {
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        const userDocRef = doc(db, "users", currentUser.uid);
+        await setDoc(userDocRef, { EducationInfo: obj }, { merge: true });
+        console.log('Education info added successfully');
+        storeUserResume(currentUser.uid);
+
+        await updateAndStoreUserData(obj, "EducationInfo");
+        // Clear input fields or any other logic
+        CourseNameInput.current.value = '';
+        SpecializationInput.current.value = '';
+        CollegeNameInput.current.value = '';
+        CourseDurationInput.current.value = '';
+        CGPAInput.current.value = '';
+      } else {
+        console.log('User not authenticated');
+      }
+    } catch (error) {
+      console.error('Error adding education info:', error);
+    }
   };
-  return (
+  return(
     <>
       <div className="fixed inset-0 bg-black  bg-opacity-25 backdrop-blur-sm flex justify-center items-center">
         <form
-          onSubmit={handlesubmit}
+          onSubmit={handleSubmit}
           className="mx-auto bg-white m-2 p-5 rounded-lg border-blue-400 border-solid border-2 w-2/5"
         >
           <div className="relative z-0 w-full mb-5 group">

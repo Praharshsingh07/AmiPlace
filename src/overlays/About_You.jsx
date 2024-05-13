@@ -2,6 +2,9 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { useRef } from "react";
 import { InfoAction } from "../store/features/About_you_info/AboutYouSlice";
+import { auth, db } from "../firebase.config";
+import { collection, addDoc,setDoc,doc } from "firebase/firestore";
+import { updateAndStoreUserData } from "../utils";
 
 const About_You = ({ isVisible, onClose }) => {
   if (!isVisible) return null;
@@ -16,7 +19,7 @@ const About_You = ({ isVisible, onClose }) => {
   const LinkedinUrlInput = useRef();
   const GitHubUrlInput = useRef();
 
-  const handlesubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const obj = {
       FullName: FullNameInput.current.value,
@@ -25,16 +28,33 @@ const About_You = ({ isVisible, onClose }) => {
       CurrentLocation: CurrentLocationInput.current.value,
       Gender: GenderInput.current.value,
       DOB: DOBInput.current.value,
+      // LinkedinUrl: LinkedinUrlInput.current.value,
+      // GitHubUrl: GitHubUrlInput.current.value,
     };
-    dispatch(InfoAction.HandleInputForm(obj));
-    FullNameInput.current.value = "";
-    CourseNameInput.current.value = "";
-    UniversityNameInput.current.value = "";
-    CurrentLocationInput.current.value = "";
-    GenderInput.current.value = "";
-    DOBInput.current.value = "";
-    LinkedinUrlInput.current.value = "";
-    GitHubUrlInput.current.value = "";
+
+    try {
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        const userDocRef = doc(db, "users", currentUser.uid);
+        await setDoc(userDocRef, { aboutYouInfo: obj }, { merge: true });
+        console.log("About You info added successfully");
+        await updateAndStoreUserData(obj, "aboutYouInfo");
+        dispatch(InfoAction.HandleInputForm(obj));
+        // Clear input fields
+        FullNameInput.current.value = "";
+        CourseNameInput.current.value = "";
+        UniversityNameInput.current.value = "";
+        CurrentLocationInput.current.value = "";
+        GenderInput.current.value = "";
+        DOBInput.current.value = "";
+        // LinkedinUrlInput.current.value = "";
+        // GitHubUrlInput.current.value = "";
+      } else {
+        console.log("User not authenticated");
+      }
+    } catch (error) {
+      console.error("Error adding About You info:", error);
+    }
   };
 
   return (
@@ -42,7 +62,7 @@ const About_You = ({ isVisible, onClose }) => {
       <div className=" fixed inset-0 bg-black  bg-opacity-25 backdrop-blur-sm flex justify-center items-center ">
         <form
           id="AboutYouForm"
-          onSubmit={handlesubmit}
+          onSubmit={handleSubmit}
           className="w-2/5 max-w-md mx-auto bg-white p-5 rounded-lg border-blue-400 border-solid border-2  "
         >
           <div className=" relative w-full mb-5 group  ">

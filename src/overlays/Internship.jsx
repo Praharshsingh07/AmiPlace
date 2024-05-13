@@ -1,6 +1,9 @@
 import React, { useRef } from "react";
 import { useDispatch } from "react-redux";
-import { IntershipInfo } from "../store/features/Intership_Info/Internship_Info.Slice";
+import { auth ,db} from "../firebase.config";
+import { collection, addDoc,setDoc,doc } from "firebase/firestore";
+import { storeUserResume } from "../firebaseutlils";
+import { updateAndStoreUserData } from "../utils";
 const Internship = ({ showModal, onClose }) => {
   if (!showModal) return null;
   const CompanyNameInput = useRef();
@@ -8,24 +11,37 @@ const Internship = ({ showModal, onClose }) => {
 
   const dispatch = useDispatch();
 
-  const handlesubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
     const obj = {
       CompanyName: CompanyNameInput.current.value,
       Internshipduration: InternshipdurationInput.current.value,
     };
+  
+    try {
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        const userDocRef = doc(db, "users", currentUser.uid);
+        await setDoc(userDocRef, { Internship: obj }, { merge: true });
+        console.log('Internship info added successfully');
+        await updateAndStoreUserData(obj, "Internship");
 
-    dispatch(IntershipInfo.HandleInputForm(obj));
-    (CompanyNameInput.current.value = ""),
-      (InternshipdurationInput.current.value = "");
+        // Clear input fields or any other logic
+        CompanyNameInput.current.value = '';
+        InternshipdurationInput.current.value = '';
+      } else {
+        console.log('User not authenticated');
+      }
+    } catch (error) {
+      console.error('Error adding internship info:', error);
+    }
   };
 
   return (
     <>
       <div className="fixed inset-0 bg-black  bg-opacity-25 backdrop-blur-sm flex justify-center items-center">
         <form
-          onSubmit={handlesubmit}
+          onSubmit={handleSubmit}
           className=" m-2 w-2/5 mx-auto bg-white p-5 rounded-lg border-blue-400 border-solid border-2"
         >
           <h1 className="block text-2xl font-bold text-black pt-0 pl-2 p-6">

@@ -1,6 +1,10 @@
 import React, { useRef } from "react";
+import { auth ,db} from "../firebase.config";
+import { collection, addDoc,setDoc,doc } from "firebase/firestore";
+import { storeUserResume } from "../firebaseutlils";
 import { useDispatch, useSelector } from "react-redux";
 import { KeySkillInfoAction } from "../store/features/Key_Skills/KeySkills_features";
+import { updateAndStoreUserData } from "../utils";
 
 const Key_Skills = ({ showModal, onClose }) => {
   if (!showModal) return null;
@@ -25,10 +29,25 @@ const Key_Skills = ({ showModal, onClose }) => {
     ) : null;
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(KeySkillInfoAction.Add(SkillsInput.current.value));
-    SkillsInput.current.value = "";
+    const skillText = SkillsInput.current.value;
+  
+    try {
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        const userDocRef = doc(db, "users", currentUser.uid);
+        await setDoc(userDocRef, { KeySkills: skillText }, { merge: true });
+        console.log('Key skill added successfully');
+        await updateAndStoreUserData(obj, "keySkills");
+        dispatch(KeySkillInfoAction.Add(skillText));
+        SkillsInput.current.value = '';
+      } else {
+        console.log('User not authenticated');
+      }
+    } catch (error) {
+      console.error('Error adding key skill:', error);
+    }
   };
   return (
     <>
