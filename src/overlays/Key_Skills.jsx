@@ -39,7 +39,7 @@ const Key_Skills = ({ showModal, onClose }) => {
         const userDocRef = doc(db, "users", currentUser.uid);
         await setDoc(userDocRef, { KeySkills: skillText }, { merge: true });
         console.log('Key skill added successfully');
-        await updateAndStoreUserData(obj, "keySkills");
+        await updateAndStoreUserData(skillText, "keySkills");
         dispatch(KeySkillInfoAction.Add(skillText));
         SkillsInput.current.value = '';
       } else {
