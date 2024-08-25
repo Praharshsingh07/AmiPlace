@@ -28,9 +28,10 @@ const Header = ({ HeaderClassNames }) => {
           <li className="list-none">
             <Link to="/">Community</Link>
           </li>
-          <li className="list-none flex flex-col">
-            <div className="cursor-not-allowed">Jobs/Interships</div>
-            <span className="text-xs opacity-45 ml-2">Comming Soon...</span>
+          <li className="list-none">
+            {/* <div className="cursor-not-allowed">Jobs/Interships</div>
+            <span className="text-xs opacity-45 ml-2">Comming Soon...</span> */}
+            <Link to="/profile">Profile</Link>
           </li>
           <li className="list-none">
             <Link to="/Companies">Companies</Link>
