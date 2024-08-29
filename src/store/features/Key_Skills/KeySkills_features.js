@@ -1,10 +1,10 @@
 import { createSlice, nanoid } from "@reduxjs/toolkit";
 
-const InitialKeySkillsValue = { skills: [] };
-
 export const KeySkillsInfo = createSlice({
-  name: "KeySkills",
-  initialState: InitialKeySkillsValue,
+  name: "KeySkillsData",
+  initialState: {
+    skills: [],
+  },
   reducers: {
     Add: (state, action) => {
       const skill = {
@@ -12,7 +12,6 @@ export const KeySkillsInfo = createSlice({
         text: action.payload,
       };
       state.skills.push(skill);
-      // state.skills = [...state.skills , skill]
     },
 
     Remove: (state, action) => {

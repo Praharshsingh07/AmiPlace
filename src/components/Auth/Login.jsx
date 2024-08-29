@@ -6,8 +6,14 @@ import { useNavigate, Navigate } from "react-router-dom";
 import signupAnimation from "../../animations/animation-2.json";
 import loadingAnimation from "../../animations/loadinganimation.json";
 import { Link } from "react-router-dom";
-import { addDoc, serverTimestamp,setDoc, updateDoc, doc } from 'firebase/firestore';
-import { AuthContext } from "../Auth/AuthContext.jsx";
+import {
+  addDoc,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+  doc,
+} from "firebase/firestore";
+import { AuthContext } from "./AuthContext.jsx";
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -44,11 +50,11 @@ function Login() {
     e.preventDefault();
     const errors = validateForm();
     setFormErrors(errors);
-  
+
     if (Object.keys(errors).length === 0) {
       setLoading(true);
       setError("");
-  
+
       try {
         const userCredential = await signInWithEmailAndPassword(
           auth,
@@ -56,23 +62,23 @@ function Login() {
           formData.password
         );
         const user = userCredential.user;
-  
+
         // Create or update the user document in the "users" collection
         const userDocRef = doc(db, "users", user.uid);
         const userData = {
           email: user.email,
           createdAt: serverTimestamp(),
         };
-  
+
         // Add the name field only if it's not empty or undefined
         if (formData.name && formData.name.trim() !== "") {
           userData.name = formData.name.trim();
         }
-  
+
         await setDoc(userDocRef, userData, { merge: true });
         console.log("User document created/updated successfully");
         console.log(user);
-  
+
         setFormData({ email: "", password: "" });
         navigate("/dashboard"); // Replace with your desired route
       } catch (error) {
