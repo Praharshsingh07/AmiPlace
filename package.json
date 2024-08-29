@@ -13,6 +13,7 @@
     "@reduxjs/toolkit": "^2.2.3",
     "classnames": "^2.5.1",
     "firebase": "^10.8.1",
+    "lodash": "^4.17.21",
     "lottie-react": "^2.4.0",
     "nanoid": "^5.0.7",
     "react": "^18.2.0",

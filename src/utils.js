@@ -1,22 +1,16 @@
-// utils.js
 import { doc, setDoc } from "firebase/firestore";
-import { db, auth } from "./firebase.config";
-import { storeUserResume } from "./firebaseutlils";
+import { auth, db } from "./firebase.config";
 
-export const updateAndStoreUserData = async (dataObject, dataType) => {
+export const updateAndStoreUserData = async (data) => {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const userDocRef = doc(db, "users", user.uid);
+
   try {
-    const currentUser = auth.currentUser;
-    if (currentUser) {
-      const userDocRef = doc(db, "users", currentUser.uid);
-      await setDoc(userDocRef, { [dataType]: dataObject }, { merge: true });
-      console.log(`${dataType} info added successfully`);
-
-      // Call the storeUserResume function after the data is updated
-      await storeUserResume();
-    } else {
-      console.log("User not authenticated");
-    }
+    await setDoc(userDocRef, data, { merge: true });
+    console.log("User data updated successfully");
   } catch (error) {
-    console.error(`Error adding ${dataType} info:`, error);
+    console.error("Error updating user data:", error);
   }
 };

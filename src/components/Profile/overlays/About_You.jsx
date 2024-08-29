@@ -1,70 +1,51 @@
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useRef } from "react";
-import { InfoAction } from "../store/features/About_you_info/AboutYouSlice";
-import { auth, db } from "../firebase.config";
-import { collection, addDoc,setDoc,doc } from "firebase/firestore";
-import { updateAndStoreUserData } from "../utils";
+import { RxCross2 } from "react-icons/rx";
+import { updateAndStoreUserData } from "../../../utils";
 
 const About_You = ({ isVisible, onClose }) => {
   if (!isVisible) return null;
 
   const dispatch = useDispatch();
   const FullNameInput = useRef();
-  const CourseNameInput = useRef();
-  const UniversityNameInput = useRef();
-  const CurrentLocationInput = useRef();
-  const GenderInput = useRef();
+  const CourseInput = useRef();
+  const BranchInput = useRef();
+  const SemisterInput = useRef();
+  const SpecializationInput = useRef();
+  const [gender, setGender] = useState("");
   const DOBInput = useRef();
-  const LinkedinUrlInput = useRef();
-  const GitHubUrlInput = useRef();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    const obj = {
+    const userData = {
       FullName: FullNameInput.current.value,
-      CourseName: CourseNameInput.current.value,
-      UniversityName: UniversityNameInput.current.value,
-      CurrentLocation: CurrentLocationInput.current.value,
-      Gender: GenderInput.current.value,
+      Course: CourseInput.current.value,
+      Branch: BranchInput.current.value,
+      Semister: SemisterInput.current.value,
+      Specialization: SpecializationInput.current.value,
+      Gender: gender,
       DOB: DOBInput.current.value,
-      // LinkedinUrl: LinkedinUrlInput.current.value,
-      // GitHubUrl: GitHubUrlInput.current.value,
     };
-
-    try {
-      const currentUser = auth.currentUser;
-      if (currentUser) {
-        const userDocRef = doc(db, "users", currentUser.uid);
-        await setDoc(userDocRef, { aboutYouInfo: obj }, { merge: true });
-        console.log("About You info added successfully");
-        await updateAndStoreUserData(obj, "aboutYouInfo");
-        dispatch(InfoAction.HandleInputForm(obj));
-        // Clear input fields
-        FullNameInput.current.value = "";
-        CourseNameInput.current.value = "";
-        UniversityNameInput.current.value = "";
-        CurrentLocationInput.current.value = "";
-        GenderInput.current.value = "";
-        DOBInput.current.value = "";
-        // LinkedinUrlInput.current.value = "";
-        // GitHubUrlInput.current.value = "";
-      } else {
-        console.log("User not authenticated");
-      }
-    } catch (error) {
-      console.error("Error adding About You info:", error);
-    }
+    updateAndStoreUserData(userData);
+    onClose();
   };
-
   return (
     <>
       <div className=" fixed inset-0 bg-black  bg-opacity-25 backdrop-blur-sm flex justify-center items-center ">
         <form
           id="AboutYouForm"
           onSubmit={handleSubmit}
-          className="w-2/5 max-w-md mx-auto bg-white p-5 rounded-lg border-blue-400 border-solid border-2  "
+          className="w-[35%] mx-auto h-[70%] overflow-y-auto bg-white px-5 pb-5 rounded-lg"
         >
+          <div className="z-10 h-10 py-3 bg-white control flex justify-end sticky top-0">
+            <button
+              className="close_overlay items-center"
+              onClick={() => onClose()}
+            >
+              <RxCross2 />
+            </button>
+          </div>
           <div className=" relative w-full mb-5 group  ">
             <label className="block mb-2 text-sm font-medium text-black ">
               Full Name
@@ -79,13 +60,13 @@ const About_You = ({ isVisible, onClose }) => {
           </div>
           <div className="relative z-0 w-full mb-5 group">
             <label className="block mb-2 text-sm font-medium text-black ">
-              Course Name
+              Course
             </label>
             <input
               type="text"
               id="base-input"
-              name="CourseName"
-              ref={CourseNameInput}
+              name="Course"
+              ref={CourseInput}
               className="bg-white border text-sm rounded-lg  block w-full p-2.5  text-black  shadow-md required"
             />
           </div>
@@ -94,13 +75,13 @@ const About_You = ({ isVisible, onClose }) => {
               htmlFor="base-input"
               className="block mb-2 text-sm font-medium text-black "
             >
-              University name
+              Branch
             </label>
             <input
               type="text"
               id="base-input"
-              name="UniversityName"
-              ref={UniversityNameInput}
+              name="Branch"
+              ref={BranchInput}
               className="bg-white border text-sm rounded-lg  block w-full p-2.5  text-black  shadow-md required"
             />
           </div>
@@ -109,13 +90,13 @@ const About_You = ({ isVisible, onClose }) => {
               htmlFor="base-input"
               className="block mb-2 text-sm font-medium text-black "
             >
-              Current Location
+              Semister
             </label>
             <input
               type="text"
               id="base-input"
-              name="CurrentLocation"
-              ref={CurrentLocationInput}
+              name="Semister"
+              ref={SemisterInput}
               className="bg-white border text-sm rounded-lg  block w-full p-2.5  text-black  shadow-md required"
             />
           </div>
@@ -124,14 +105,43 @@ const About_You = ({ isVisible, onClose }) => {
               htmlFor="base-input"
               className="block mb-2 text-sm font-medium text-black "
             >
+              Specialization
+            </label>
+            <input
+              type="text"
+              id="base-input"
+              name="Specialization"
+              ref={SpecializationInput}
+              className="bg-white border text-sm rounded-lg  block w-full p-2.5  text-black  shadow-md required"
+            />
+          </div>
+          <div className="relative z-0 w-full mb-5 group space-x-2">
+            <span className="block mb-2 text-sm font-medium text-black">
               Gender
-            </label>
+            </span>
+            <label htmlFor="male">Male</label>
             <input
-              type="text"
-              id="base-input"
+              type="radio"
+              id="male"
               name="Gender"
-              ref={GenderInput}
-              className="bg-white border text-sm rounded-lg  block w-full p-2.5  text-black  shadow-md required"
+              value="Male"
+              onChange={(e) => setGender(e.target.value)}
+            />
+            <label htmlFor="female">Female</label>
+            <input
+              type="radio"
+              id="female"
+              name="Gender"
+              value="Female"
+              onChange={(e) => setGender(e.target.value)}
+            />
+            <label htmlFor="other">Other</label>
+            <input
+              type="radio"
+              id="other"
+              name="Gender"
+              value="Other"
+              onChange={(e) => setGender(e.target.value)}
             />
           </div>
           <div className="relative z-0 w-full mb-5 group">
@@ -156,10 +166,10 @@ const About_You = ({ isVisible, onClose }) => {
             Update
           </button>{" "}
           <button
-            onClick={() => onClose()}
-            className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 "
+            type="reset"
+            className="text-white bg-gray-400 hover:bg-gray-500 focus:outline-none font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-gray-400 dark:hover:bg-gray-500 "
           >
-            cancel
+            reset
           </button>
         </form>
       </div>

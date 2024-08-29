@@ -127,7 +127,7 @@ const CreatePost = () => {
         rows="10"
         className="h-52 px-2 w-[100%] resize-none mt-3 focus:outline-none"
         placeholder="Share your experience or ask from others."
-        onChange={(e) => setPostContent(e.target.value)}
+        onChange={(e) => setPostContent(e.target.value.trim())}
         autoFocus
       ></textarea>
       {loading && <LoadingCool />}

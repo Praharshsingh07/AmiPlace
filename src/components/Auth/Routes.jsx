@@ -8,7 +8,8 @@ import { AuthContext } from "./AuthContext";
 import PrivateRoute from "./PrivateRoute";
 import EmailVerify from "./email";
 import CompaniesMain from "../Companies/CompaniesMain";
-import Display_profile from "../Display_profile";
+import Display_profile from "../Profile/Display_profile";
+import FeatureBugForm from "../FeatureBugForm";
 
 const Router = () => {
   const { currentUser } = useContext(AuthContext);
@@ -36,6 +37,7 @@ const Router = () => {
       />
       <Route path="/companies" element={<CompaniesMain />}></Route>
       <Route path="/profile" element={<Display_profile />}></Route>
+      <Route path="/FeatureBugForm" element={<FeatureBugForm />}></Route>
       {/* <Route path="/details" element={<CompanyDetails />}></Route> */}
     </Routes>
   );
