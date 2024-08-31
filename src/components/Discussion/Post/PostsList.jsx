@@ -3,7 +3,7 @@ import Post from "./Post";
 
 const PostsList = () => {
   const userNameData = useSelector(
-    (store) => store.userDetails.userData.userName
+    (store) => store.userDetails.userData.username
   );
   function getTimeDifference(timestamp) {
     const now = new Date().getTime();
@@ -55,6 +55,7 @@ const PostsList = () => {
           userName={post.userName}
           yearInfo={post.yearInfo}
           content={post.content}
+          likedBy = {post.likedBy}
           likes={formatLikeCount(post.likes)}
           liked={post.likedBy.hasOwnProperty(`${userNameData}`)}
           timeAgo={getTimeDifference(post.createdAt)}

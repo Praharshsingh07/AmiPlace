@@ -44,9 +44,9 @@ const CommentUtil = ({ postIndex, yourImg, postId }) => {
   const handleAddComment = async () => {
     const newComment = {
       id: Math.random() * 1000000000,
-      userName: userData.userName,
-      userImage: userData.imgPath,
-      yearInfo: userData.yearInfo,
+      userName: userData.username,
+      userImage: userData.avatarURL,
+      yearInfo: userData.Semister + " " + userData.Branch,
       commentContent: commentInput,
       commentImg: commentImageUrl,
       createdAt: new Date().getTime(),

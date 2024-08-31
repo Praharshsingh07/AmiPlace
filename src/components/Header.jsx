@@ -1,24 +1,27 @@
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { FiMenu } from "react-icons/fi";
-// import { MdConstruction } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
 import { CgOrganisation } from "react-icons/cg";
 import { MdConnectWithoutContact } from "react-icons/md";
-import { useState } from "react";
 import SideDrawer from "./SideDrawer";
+import UserSearch from "./UserSearch";  // Import the new UserSearch component
+
 const Header = ({ HeaderClassNames }) => {
   const path = "src/Media/logo.svg";
   const [menu, setMenu] = useState(false);
+
   const handleMenuClick = () => {
     setMenu(!menu);
   };
+
   return (
     <>
-      <nav className={HeaderClassNames}>
-        {/* Your navigation content here */}
-        <div className="logo flex space-x-1 ml-5 my-3">
+      <nav className={`${HeaderClassNames} flex items-center justify-between`}>
+        {/* Logo and App Name */}
+        <div className="logo flex items-center space-x-1 ml-5">
           <div className="img w-7">
-            <img src={`${path}`} alt="logo" />
+            <img src={path} alt="logo" />
           </div>
           <div className="appName">
             <span className="text-xl">AMIPLACE</span>
@@ -27,53 +30,47 @@ const Header = ({ HeaderClassNames }) => {
             </div>
           </div>
         </div>
-        {/* Navigation */}
-        <div className="hidden navbar md:flex space-x-14 text-lg p4 mr-5 mt-2">
-          <li className="list-none">
-            <Link to="/">Community</Link>
-          </li>
-          <li className="list-none">
-            <Link to="/Companies">Companies</Link>
-          </li>
-          <li className="list-none">
-            <SideDrawer />
-          </li>
+
+        {/* UserSearch Component */}
+        <div className="flex-grow mx-4 max-w-md">
+          <UserSearch />
         </div>
+
+        {/* Navigation Links */}
+        <div className="hidden md:flex space-x-6 items-center mr-5">
+          <Link to="/" className="nav-link">Community</Link>
+          <Link to="/Companies" className="nav-link">Companies</Link>
+          <SideDrawer />
+        </div>
+
+        {/* Mobile Menu Icon */}
         <FiMenu
-          className="md:hidden mr-3 text-2xl cursor-pointer"
+          className="md:hidden mr-5 text-2xl cursor-pointer"
           onClick={handleMenuClick}
         />
       </nav>
-      <div
-        className={`${
-          menu == false && "hidden"
-        } md:hidden fixed top-17 z-30 side-bar w-full h-[30vh] p-5  font-medium border-[1px] text-lg bg-gray-100  shadow-sm`}
-      >
-        <span className="text-xl font-medium mr-1 text-gray-700">
-          Navitage to:
-        </span>
-        <li className="list-none mx-3 my-2 flex space-x-2">
-          <MdConnectWithoutContact className="mt-1 text-xl" />
-          <Link to="/" className="opacity-70">
-            Community
-          </Link>
-        </li>
-        <li className="list-none mx-3 my-2 flex space-x-2">
-          {/* <span>Jobs/Interships</span>
-          <MdConstruction className="ml-2 mt-[5px] text-xl" /> */}
-          <CgProfile className="mt-1" />
-          <Link to="/profile" className="opacity-70">
-            Profile
-          </Link>
-        </li>
-        <li className="list-none mx-3 my-2 flex space-x-2">
-          <CgOrganisation className="mt-1" />
-          <Link to="/companies" className="opacity-70">
-            Companies
-          </Link>
-        </li>
-      </div>
+
+      {/* Mobile Menu */}
+      {menu && (
+        <div className="md:hidden fixed top-16 left-0 right-0 bg-white shadow-md z-50">
+          <div className="flex flex-col p-4 space-y-3">
+            <Link to="/" className="flex items-center space-x-2" onClick={handleMenuClick}>
+              <MdConnectWithoutContact className="text-xl" />
+              <span>Community</span>
+            </Link>
+            <Link to="/profile" className="flex items-center space-x-2" onClick={handleMenuClick}>
+              <CgProfile className="text-xl" />
+              <span>Profile</span>
+            </Link>
+            <Link to="/companies" className="flex items-center space-x-2" onClick={handleMenuClick}>
+              <CgOrganisation className="text-xl" />
+              <span>Companies</span>
+            </Link>
+          </div>
+        </div>
+      )}
     </>
   );
 };
+
 export default Header;

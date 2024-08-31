@@ -8,7 +8,7 @@ const SideDrawer = () => {
   const navigate = useNavigate();
   const auth = getAuth();
   const userData = useSelector((store) => store.userDetails.userData);
-  const imgPath = userData.imgPath;
+  const imgPath = userData.avatarURL;
 
   const handleLogout = async () => {
     try {
