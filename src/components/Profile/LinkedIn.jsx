@@ -2,25 +2,28 @@ import React, { useState, useEffect } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { auth, db } from "../../firebase.config";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { useSelector } from "react-redux";
+import userDetailsSlice from "../../store/userDetailsSlice";
 
 const LinkedIn = () => {
   const [linkedInEdit, setLinkedInEdit] = useState(false);
-  const [linkedInInput, setLinkedInInput] = useState("");
+  const userData = useSelector((store) => store.userDetails.userData);
+  const [linkedInInput, setLinkedInInput] = useState(userData.linkedIn);
 
-  useEffect(() => {
-    const fetchLinkedInProfile = async () => {
-      const user = auth.currentUser;
-      if (user) {
-        const userDocRef = doc(db, "users", user.uid);
-        const userDoc = await getDoc(userDocRef);
-        if (userDoc.exists()) {
-          setLinkedInInput(userDoc.data().linkedinProfile || "");
-        }
-      }
-    };
+  // useEffect(() => {
+  //   const fetchLinkedInProfile = async () => {
+  //     const user = auth.currentUser;
+  //     if (user) {
+  //       const userDocRef = doc(db, "users", user.uid);
+  //       const userDoc = await getDoc(userDocRef);
+  //       if (userDoc.exists()) {
+  //         setLinkedInInput(userDoc.data().linkedinProfile || "");
+  //       }
+  //     }
+  //   };
 
-    fetchLinkedInProfile();
-  }, []);
+  //   fetchLinkedInProfile();
+  // }, []);
 
   const handleAddLinkedIn = async () => {
     if (linkedInInput) {
@@ -49,7 +52,7 @@ const LinkedIn = () => {
           href={linkedInInput}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-2 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 ml-10" 
+          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-2 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 ml-10"
         >
           To Profile
         </a>

@@ -10,6 +10,8 @@ import EmailVerify from "./email";
 import CompaniesMain from "../Companies/CompaniesMain";
 import Display_profile from "../Profile/Display_profile";
 import FeatureBugForm from "../FeatureBugForm";
+import DisplayOnlyProfile from "../seeProfile/DisplayOnlyProfile";
+import LikedByList from "../Discussion/Post/LikedByList";
 
 const Router = () => {
   const { currentUser } = useContext(AuthContext);
@@ -38,7 +40,11 @@ const Router = () => {
       <Route path="/companies" element={<CompaniesMain />}></Route>
       <Route path="/profile" element={<Display_profile />}></Route>
       <Route path="/FeatureBugForm" element={<FeatureBugForm />}></Route>
-      {/* <Route path="/details" element={<CompanyDetails />}></Route> */}
+      <Route
+        path="/DisplayOnlyProfile"
+        element={<DisplayOnlyProfile />}
+      ></Route>
+      <Route path="/LikedByList" element={<LikedByList />}></Route>
     </Routes>
   );
 };

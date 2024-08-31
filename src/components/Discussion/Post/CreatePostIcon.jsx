@@ -9,8 +9,8 @@ const CreatePostIcon = () => {
   };
 
   const userData = useSelector((store) => store.userDetails.userData);
-  const imgPath = userData.imgPath;
-  const userName = userData.userName;
+  const imgPath = userData.avatarURL;
+  const userName = userData.FullName;
 
   return (
     <div className="createPostContainer border-b-[1px]  border-b-gray-300 flex items-center justify-center space-x-3 py-7 px-1  sticky top-16 z-20 bg-white rounded-t-md">

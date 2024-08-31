@@ -24,7 +24,7 @@ import CommentSection from "./CommentSection";
 const FullPost = ({ postIndex, timeAgo, postId, liked, likes }) => {
   const dispatch = useDispatch();
   const post = useSelector((store) => store.posts.initialPosts[postIndex]);
-  const yourImg = useSelector((store) => store.userDetails.userData.imgPath);
+  const userData = useSelector((store) => store.userDetails.userData);
   const [localLiked, setLocalLiked] = useState(liked);
 
   const userDataUserName = useSelector(
@@ -133,7 +133,7 @@ const FullPost = ({ postIndex, timeAgo, postId, liked, likes }) => {
               </span>
               <span className="yearInfo opacity-60 text-sm">
                 {" "}
-                ~ {post.yearInfo}
+                ~ sem {post.yearInfo} {post.Branch}
               </span>
             </div>
           </div>
@@ -172,15 +172,6 @@ const FullPost = ({ postIndex, timeAgo, postId, liked, likes }) => {
             >
               Delete Post
             </div>
-            {/* <a
-            href="#"
-            className="text-gray-700 block px-4 py-2 text-sm"
-            role="menuitem"
-            tabIndex="-1"
-            id="menu-item-1"
-          >
-            Support
-          </a> */}
           </div>
         </div>
         <p className="content border-l-2 border-gray-400 pl-3 mb-3 mx-6 py-0 overflow-hidden">
@@ -219,7 +210,11 @@ const FullPost = ({ postIndex, timeAgo, postId, liked, likes }) => {
           </div>
         </div>
       </div>
-      <CommentUtil yourImg={yourImg} postIndex={postIndex} postId={postId} />
+      <CommentUtil
+        yourImg={userData.avatarURL}
+        postIndex={postIndex}
+        postId={postId}
+      />
       <CommentSection postIndex={postIndex} />
     </>
   );

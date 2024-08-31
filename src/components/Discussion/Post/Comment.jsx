@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../../../firebase.config";
 import { postsAction } from "../../../store/postsSlice";
+import { Link } from "react-router-dom";
 
 const Comment = ({
   id,
@@ -25,9 +26,10 @@ const Comment = ({
   postId,
 }) => {
   const dispatch = useDispatch();
-  const userDataUserName = useSelector(
-    (store) => store.userDetails.userData.userName
+  const userData =  useSelector(
+    (store) => store.userDetails.userData
   );
+  const userDataUserName = userData.username;
   const [threeDots, setThreeDots] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -90,11 +92,15 @@ const Comment = ({
             alt="user_ki_photu"
             className="rounded-full w-8 h-8 ml-2 mt-2"
           />
-          <span className="text-base font-medium opacity-70 mt-2">
+          <Link
+          to={`${
+            userName == userDataUserName ? "/profile" : "/DisplayOnlyProfile"
+          }`}
+          state={{ user: userName }} className="text-base font-medium opacity-70 mt-2">
             {userName}
-          </span>
+          </Link>
           <span className="yearInfo opacity-60 text-sm mt-[10px]">
-            ~ {yearInfo}
+            ~ sem {yearInfo}
           </span>
         </div>
         <div className="flex opacity-55 space-x-1 pr-4">

@@ -62,15 +62,14 @@ const CreatePost = () => {
   const handleDelete = () => {
     dispatch(createPostActions.createPost());
   };
-
   const handlePost = async () => {
     setLoading(true);
     const newPost = {
       postId: -1,
-      userImage: userData.imgPath,
+      userImage: userData.avatarURL,
       postImage: imageUrl,
-      userName: userData.userName,
-      yearInfo: userData.yearInfo,
+      userName: userData.username,
+      yearInfo: userData.Semister + " " + userData.Branch,
       content: postContent,
       likes: 0,
       likedBy: {},
@@ -118,9 +117,9 @@ const CreatePost = () => {
         <div className="flex space-x-2 mb-2">
           <img
             className="rounded-full w-8 h-8 border-[2px] border-green-600"
-            src={userData.imgPath}
+            src={userData.avatarURL}
           />
-          <span className="font-medium mt-1">{userData.userName}</span>
+          <span className="font-medium mt-1">{userData.username}</span>
         </div>
       </div>
       <textarea

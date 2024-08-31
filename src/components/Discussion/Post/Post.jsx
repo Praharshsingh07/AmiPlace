@@ -18,8 +18,10 @@ import {
   deleteDoc,
   doc,
   getDoc,
+  where,
 } from "firebase/firestore";
 import LoadingCool2 from "../../LoadingCool2";
+import { Link } from "react-router-dom";
 
 const Post = ({
   postId,
@@ -29,20 +31,22 @@ const Post = ({
   userName,
   yearInfo,
   content,
+  likedBy,
   likes,
   liked,
   timeAgo,
 }) => {
   const dispatch = useDispatch();
-  const userDataUserName = useSelector(
-    (store) => store.userDetails.userData.userName
-  );
+  const userData = useSelector((store) => store.userDetails.userData);
+  const userDataUserName = userData.username;
   const [loading, setLoading] = useState(false);
   const [localLiked, setLocalLiked] = useState(liked);
   const [threeDots, setThreeDots] = useState(false);
   const [isPostClicked, setIsPostClicked] = useState(false);
   const [sound] = useSound("src/Media/multi-pop-1-188165.mp3", { volume: 0.2 });
+  const likedByUsers = Object.keys(likedBy);
   const dropdownRef = useRef(null);
+  const [userUID, setUserUID] = useState(null);
 
   const handleThreeDots = () => {
     setThreeDots(!threeDots);
@@ -130,27 +134,33 @@ const Post = ({
   return (
     <div className="relative postContainer px-5 border-b-[1px] border-gray-300 md:hover:bg-gray-100 min-h-10 bg-white">
       <div className="postHeader flex justify-between">
-        <div className="userInfo flex space-x-2 my-2 ">
+        <Link
+          to={`${
+            userName == userDataUserName ? "/profile" : "/DisplayOnlyProfile"
+          }`}
+          state={{ user: userName }}
+          className="userInfo flex space-x-2 my-2 "
+        >
           <img
             src={userImage}
             alt="user_ki_photu"
             className="rounded-full w-8 h-8 ml-2 mt-2 border-[0.5px]"
           />
           <div className="userName mt-2 flex gap-2">
-            <span className="text-base font-medium opacity-70 flex">
+            <div className="text-base font-medium opacity-70 flex">
               {userName}
               {(userName === "devanshVerma" ||
                 userName === "PraharshRaj" ||
                 userName === "anush") && (
                 <FcApproval className="mt-[4px] ml-1 text-lg" />
               )}
-            </span>
+            </div>
             <span className="yearInfo opacity-60 text-sm mt-[3px]">
               {" "}
-              ~ {yearInfo}
+              ~ sem {yearInfo} {}
             </span>
           </div>
-        </div>
+        </Link>
         <div className=" mt-4 flex space-x-1 opacity-55">
           <span className="addedTimeAgo text-sm mt-1">{timeAgo} </span>
           <div
@@ -208,10 +218,19 @@ const Post = ({
           ) : (
             <FcLike className="text-2xl" onClick={() => handleLike()} />
           )}
-          <div className="likesCount text-sm text-gray-500 mt-[2px]">
+          <Link
+            to="/LikedByList"
+            state={{
+              likedBy: {
+                likedByUsers: likedByUsers,
+                userDataUserName: userDataUserName,
+              },
+            }}
+            className="likesCount text-sm text-gray-500 mt-[2px]"
+          >
             {likes}
             {`${likes < 2 ? " Reaction" : " Reactions"}`}
-          </div>
+          </Link>
         </div>
         <div
           className="comment flex space-x-1 cursor-pointer p-0 hover:text-blue-500 mb-1"
