@@ -5,7 +5,7 @@ import { CgProfile } from "react-icons/cg";
 import { CgOrganisation } from "react-icons/cg";
 import { MdConnectWithoutContact } from "react-icons/md";
 import SideDrawer from "./SideDrawer";
-import UserSearch from "./UserSearch";  // Import the new UserSearch component
+import UserSearch from "./UserSearch"; // Import the new UserSearch component
 
 const Header = ({ HeaderClassNames }) => {
   const path = "src/Media/logo.svg";
@@ -37,9 +37,13 @@ const Header = ({ HeaderClassNames }) => {
         </div>
 
         {/* Navigation Links */}
-        <div className="hidden md:flex space-x-6 items-center mr-5">
-          <Link to="/" className="nav-link">Community</Link>
-          <Link to="/Companies" className="nav-link">Companies</Link>
+        <div className="hidden md:flex items-center mr-5">
+          <Link to="/" className="nav-link mx-3">
+            Community
+          </Link>
+          <Link to="/Companies" className="nav-link mx-3">
+            Companies
+          </Link>
           <SideDrawer />
         </div>
 
@@ -54,15 +58,27 @@ const Header = ({ HeaderClassNames }) => {
       {menu && (
         <div className="md:hidden fixed top-16 left-0 right-0 bg-white shadow-md z-50">
           <div className="flex flex-col p-4 space-y-3">
-            <Link to="/" className="flex items-center space-x-2" onClick={handleMenuClick}>
+            <Link
+              to="/"
+              className="flex items-center space-x-2"
+              onClick={handleMenuClick}
+            >
               <MdConnectWithoutContact className="text-xl" />
               <span>Community</span>
             </Link>
-            <Link to="/profile" className="flex items-center space-x-2" onClick={handleMenuClick}>
+            <Link
+              to="/profile"
+              className="flex items-center space-x-2"
+              onClick={handleMenuClick}
+            >
               <CgProfile className="text-xl" />
               <span>Profile</span>
             </Link>
-            <Link to="/companies" className="flex items-center space-x-2" onClick={handleMenuClick}>
+            <Link
+              to="/companies"
+              className="flex items-center space-x-2"
+              onClick={handleMenuClick}
+            >
               <CgOrganisation className="text-xl" />
               <span>Companies</span>
             </Link>

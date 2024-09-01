@@ -7,11 +7,16 @@ import {
   where,
 } from "firebase/firestore";
 import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { db } from "../../../firebase.config";
 
 const LikedByUser = ({ username, currentUser }) => {
   const [avatarURL, setAvatarURL] = useState("");
+  const userData =  useSelector(
+    (store) => store.userDetails.userData
+  );
+  const userDataUserName = userData.username;
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -45,7 +50,7 @@ const LikedByUser = ({ username, currentUser }) => {
 
   return (
     <Link
-      to={username === currentUser ? "/profile" : "/DisplayOnlyProfile"}
+      to={username === userDataUserName ? "/profile" : "/DisplayOnlyProfile"}
       state={{ user: username }}
       className="flex w-full mx-5 my-1 py-1 space-x-2"
     >

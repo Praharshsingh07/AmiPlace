@@ -80,7 +80,7 @@ const SideDrawer = () => {
       {/* Overlay to close drawer when clicking outside */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black opacity-50"
+          className=" fixed inset-0 bg-black opacity-50"
           onClick={toggleDrawer}
         ></div>
       )}
