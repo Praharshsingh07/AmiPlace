@@ -30,6 +30,7 @@ const About_You = ({ isVisible, onClose }) => {
     updateAndStoreUserData(userData);
     onClose();
   };
+
   return (
     <>
       <div className=" fixed inset-0 bg-black  bg-opacity-25 backdrop-blur-sm flex justify-center items-center ">
@@ -46,8 +47,8 @@ const About_You = ({ isVisible, onClose }) => {
               <RxCross2 />
             </button>
           </div>
-          <div className=" relative w-full mb-5 group  ">
-            <label className="block mb-2 text-sm font-medium text-black ">
+          <div className=" relative w-full mb-5 group">
+            <label className="block mb-2 text-sm font-medium text-black">
               Full Name
             </label>
             <input
@@ -55,50 +56,59 @@ const About_You = ({ isVisible, onClose }) => {
               id="base-input"
               name="FullName"
               ref={FullNameInput}
-              className="bg-white border   text-sm rounded-lg  block w-full p-2.5  text-black  shadow-md required"
+              className="bg-white border text-sm rounded-lg block w-full p-2.5 text-black shadow-md required"
             />
           </div>
           <div className="relative z-0 w-full mb-5 group">
-            <label className="block mb-2 text-sm font-medium text-black ">
+            <label className="block mb-2 text-sm font-medium text-black">
               Course
             </label>
-            <input
-              type="text"
+            <select
               id="base-input"
               name="Course"
               ref={CourseInput}
-              className="bg-white border text-sm rounded-lg  block w-full p-2.5  text-black  shadow-md required"
-            />
+              className="bg-white border text-sm rounded-lg block w-full p-2.5 text-black shadow-md required"
+            >
+              <option value="B.Tech">B.Tech</option>
+            </select>
           </div>
           <div className="relative z-0 w-full mb-5 group">
-            <label
-              htmlFor="base-input"
-              className="block mb-2 text-sm font-medium text-black "
-            >
+            <label className="block mb-2 text-sm font-medium text-black">
               Branch
             </label>
-            <input
-              type="text"
+            <select
               id="base-input"
               name="Branch"
               ref={BranchInput}
-              className="bg-white border text-sm rounded-lg  block w-full p-2.5  text-black  shadow-md required"
-            />
+              className="bg-white border text-sm rounded-lg block w-full p-2.5 text-black shadow-md required"
+            >
+              <option value="CSE">CSE</option>
+              <option value="IT">IT</option>
+              <option value="ECE">ECE</option>
+              <option value="Mechanical">Mechanical</option>
+              <option value="Civil">Civil</option>
+              <option value="Chemical">Chemical</option>
+            </select>
           </div>
           <div className="relative z-0 w-full mb-5 group">
-            <label
-              htmlFor="base-input"
-              className="block mb-2 text-sm font-medium text-black "
-            >
+            <label className="block mb-2 text-sm font-medium text-black">
               Semister
             </label>
-            <input
-              type="text"
+            <select
               id="base-input"
               name="Semister"
               ref={SemisterInput}
-              className="bg-white border text-sm rounded-lg  block w-full p-2.5  text-black  shadow-md required"
-            />
+              className="bg-white border text-sm rounded-lg block w-full p-2.5 text-black shadow-md required"
+            >
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+            </select>
           </div>
           <div className="relative z-0 w-full mb-5 group">
             <label
@@ -152,7 +162,7 @@ const About_You = ({ isVisible, onClose }) => {
               Date of Birth (DD/MM/YYYY)
             </label>
             <input
-              type="text"
+              type="date"
               id="base-input"
               name="DOB"
               ref={DOBInput}
@@ -169,7 +179,7 @@ const About_You = ({ isVisible, onClose }) => {
             type="reset"
             className="text-white bg-gray-400 hover:bg-gray-500 focus:outline-none font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-gray-400 dark:hover:bg-gray-500 "
           >
-            reset
+            Reset
           </button>
         </form>
       </div>

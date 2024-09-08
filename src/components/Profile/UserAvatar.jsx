@@ -13,11 +13,13 @@ import {
   where,
   getDocs,
 } from "firebase/firestore";
+import { MdVerified } from "react-icons/md";
 
 const UserAvatar = () => {
   const [avatarURL, setAvatarURL] = useState(null);
   const [uploadError, setUploadError] = useState(null);
   const [username, setUsername] = useState("");
+  const [oldUsername, setOldUsername] = useState("");
   const [isEditingUsername, setIsEditingUsername] = useState(false);
   const [usernameError, setUsernameError] = useState(null);
 
@@ -33,6 +35,7 @@ const UserAvatar = () => {
             setAvatarURL(userData.avatarURL);
           }
           if (userData.username) {
+            setOldUsername(userData.username);
             setUsername(userData.username);
           }
         }
@@ -104,6 +107,7 @@ const UserAvatar = () => {
   };
   const handleCancelEdit = () => {
     setIsEditingUsername(false);
+    setUsername(oldUsername);
     setUsernameError(null);
   };
 
@@ -166,8 +170,13 @@ const UserAvatar = () => {
           </div>
         ) : (
           <div className="flex items-center mt-2">
-            <span className="text-xl font-semibold ">
+            <span className="text-xl font-semibold flex">
               ~ {username || "No username set"}
+              {(username === "devanshVerma" ||
+                username === "praharshsingh07" ||
+                username === "anush") && (
+                <MdVerified className="mt-[7px] ml-1 text-lg text-blue-500" />
+              )}
             </span>
             <button
               onClick={() => setIsEditingUsername(true)}

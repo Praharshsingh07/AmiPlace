@@ -2,11 +2,13 @@ import { useState } from "react";
 import { BsImage } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { FcCheckmark } from "react-icons/fc";
-import { db } from "../../../firebase.config";
+import { auth, db } from "../../../firebase.config";
 import {
+  addDoc,
   arrayUnion,
   collection,
   doc,
+  getDoc,
   getDocs,
   orderBy,
   query,
@@ -15,7 +17,7 @@ import {
 } from "firebase/firestore";
 import { postsAction } from "../../../store/postsSlice";
 
-const CommentUtil = ({ postIndex, yourImg, postId }) => {
+const CommentUtil = ({ yourImg, postId }) => {
   const dispatch = useDispatch();
   const userData = useSelector((store) => store.userDetails.userData);
 
@@ -44,35 +46,55 @@ const CommentUtil = ({ postIndex, yourImg, postId }) => {
   const handleAddComment = async () => {
     const newComment = {
       id: Math.random() * 1000000000,
-      userName: userData.username,
-      userImage: userData.avatarURL,
-      yearInfo: userData.Semister + " " + userData.Branch,
+      user: auth.currentUser.uid,
       commentContent: commentInput,
       commentImg: commentImageUrl,
       createdAt: new Date().getTime(),
     };
+
     try {
       const postRef = doc(db, "post", postId);
       await updateDoc(postRef, {
         comments: arrayUnion(newComment),
       });
-    } catch (error) {
-      console.error("Error adding comment:", error);
-    }
-    handleCancel();
-    const reloadPost = [];
-    try {
+
+      // Get the post author's ID
+      const postSnapshot = await getDoc(postRef);
+      const postData = postSnapshot.data();
+      const postAuthorId = postData.user;
+
+      // Create a notification if the comment is not by the post author
+      if (postAuthorId !== auth.currentUser.uid) {
+        const notificationRef = collection(db, "notifications");
+        await addDoc(notificationRef, {
+          type: "comment",
+          senderId: auth.currentUser.uid,
+          senderName: userData.username,
+          recipientId: postAuthorId,
+          postId: postId,
+          content:
+            commentInput.substring(0, 50) +
+            (commentInput.length > 50 ? "..." : ""),
+          createdAt: serverTimestamp(),
+        });
+      }
+
+      // Reset the comment input and image
+      handleCancel();
+
+      // Reload the posts
+      const reloadPost = [];
       const postQuery = query(
         collection(db, "post"),
         orderBy("createdAt", "desc")
       );
       const querySnapshot = await getDocs(postQuery);
       querySnapshot.forEach((post) => {
-        reloadPost.push({ ...post.data(), id: post.id }); // Include the document ID
+        reloadPost.push({ ...post.data(), id: post.id });
       });
       dispatch(postsAction.addPost(reloadPost));
-    } catch (e) {
-      console.error("Error adding document: ", e);
+    } catch (error) {
+      console.error("Error adding comment:", error);
     }
   };
 

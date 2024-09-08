@@ -44,6 +44,9 @@ const Header = ({ HeaderClassNames }) => {
           <Link to="/Companies" className="nav-link mx-3">
             Companies
           </Link>
+          <Link to="/Notifications" className="nav-link mx-3">
+            Notifications
+          </Link>
           <SideDrawer />
         </div>
 
