@@ -9,17 +9,49 @@ import { auth, db } from "../../../firebase.config";
 import { updateDoc, doc, getDoc } from "firebase/firestore";
 import CommentUtil from "./CommentUtil";
 import CommentSection from "./CommentSection";
+import { useLocation } from "react-router-dom";
 
-const FullPost = ({ postIndex, timeAgo, postId, liked, likes }) => {
+const SeePostFromNotify = () => {
+  const location = useLocation();
+  const payload = location.state;
+  const post = payload.payload.post;
+  const postId = payload.payload.postId;
   const dispatch = useDispatch();
-  const post = useSelector((store) => store.posts.initialPosts[postIndex]);
   const userData = useSelector((store) => store.userDetails.userData);
-  const [localLiked, setLocalLiked] = useState(liked);
   const [userName, setUserName] = useState("");
   const [userImage, setUserImage] = useState("");
   const [yearInfo, setYearInfo] = useState("");
   const [sound] = useSound("src/Media/multi-pop-1-188165.mp3", { volume: 0.5 });
+  const liked = post.likedBy.hasOwnProperty(auth.currentUser.uid);
+  const [localLiked, setLocalLiked] = useState(liked);
 
+  const timeAgo = function getTimeDifference(timestamp) {
+    const now = new Date().getTime();
+    const postTime = timestamp.toDate().getTime();
+    const diffTime = now - postTime;
+    const minutes = Math.floor((diffTime / (1000 * 60)) % 60);
+    const hours = Math.floor((diffTime / (1000 * 60 * 60)) % 24);
+    const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    if (days > 0) {
+      return `${days}d`;
+    } else if (hours > 0) {
+      return `${hours}h`;
+    } else {
+      return `${minutes}m`;
+    }
+  }
+  // function formatLikeCount(count) {
+  //   if (count >= 1000000000) {
+  //     return (count / 1000000000).toFixed(1) + "B";
+  //   } else if (count >= 1000000) {
+  //     return (count / 1000000).toFixed(1) + "M";
+  //   } else if (count >= 1000) {
+  //     return (count / 1000).toFixed(1) + "K";
+  //   } else {
+  //     return count.toString();
+  //   }
+  // }
   useEffect(() => {
     const fetchUserData = async () => {
       const userDocRef = doc(db, "users", post.user);
@@ -87,10 +119,10 @@ const FullPost = ({ postIndex, timeAgo, postId, liked, likes }) => {
   useEffect(() => {
     setLocalLiked(liked);
   }, [liked]);
-
+  
   return (
     <>
-      <div className="relative postContainer px-5 md:hover:bg-gray-100 min-h-10 bg-white">
+      <div className="relative postContainer px-5 w-auto md:hover:bg-gray-100 min-h-10 bg-white">
         <div className="postHeader flex justify-between">
           <div className="userInfo flex space-x-2 my-2 ">
             <img
@@ -133,8 +165,8 @@ const FullPost = ({ postIndex, timeAgo, postId, liked, likes }) => {
               <FcLike className="text-2xl" onClick={() => handleLike()} />
             )}
             <div className="likesCount text-sm text-gray-500 mt-[2px]">
-              {likes}
-              {`${likes < 2 ? " Reaction" : " Reactions"}`}
+              {post.likes}
+              {`${post.likes < 2 ? " Reaction" : " Reactions"}`}
             </div>
           </div>
           <div
@@ -153,4 +185,4 @@ const FullPost = ({ postIndex, timeAgo, postId, liked, likes }) => {
     </>
   );
 };
-export default FullPost;
+export default SeePostFromNotify;

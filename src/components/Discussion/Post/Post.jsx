@@ -8,7 +8,7 @@ import { FcApproval } from "react-icons/fc";
 import { useDispatch, useSelector } from "react-redux";
 import useSound from "use-sound";
 import PostOverlay from "./PostOverlay";
-import { db } from "../../../firebase.config";
+import { auth, db } from "../../../firebase.config";
 import {
   getDocs,
   collection,
@@ -19,17 +19,18 @@ import {
   doc,
   getDoc,
   where,
+  addDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 import LoadingCool2 from "../../LoadingCool2";
 import { Link } from "react-router-dom";
+import { MdVerified } from "react-icons/md";
 
 const Post = ({
   postId,
   postIndex,
-  userImage,
+  user,
   postImage,
-  userName,
-  yearInfo,
   content,
   likedBy,
   likes,
@@ -42,48 +43,89 @@ const Post = ({
   const [loading, setLoading] = useState(false);
   const [localLiked, setLocalLiked] = useState(liked);
   const [threeDots, setThreeDots] = useState(false);
+  const [userName, setUserName] = useState("");
+  const [userImage, setUserImage] = useState("");
+  const [yearInfo, setYearInfo] = useState("");
   const [isPostClicked, setIsPostClicked] = useState(false);
   const [sound] = useSound("src/Media/multi-pop-1-188165.mp3", { volume: 0.2 });
   const likedByUsers = Object.keys(likedBy);
   const dropdownRef = useRef(null);
-  const [userUID, setUserUID] = useState(null);
 
   const handleThreeDots = () => {
     setThreeDots(!threeDots);
   };
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const userDocRef = doc(db, "users", user);
+      const userDoc = await getDoc(userDocRef);
+      if (userDoc.exists()) {
+        const data = userDoc.data();
+        setUserName(data.username);
+        setUserImage(data.avatarURL);
+        setYearInfo(data.Semister + " " + data.Branch);
+      }
+    };
+    fetchUserData();
+  }, []);
+  
   const handleLike = async () => {
-    // frontend logic
+    // Get the user's UID
+    const userUid = auth.currentUser.uid;
+
+    // Toggle the frontend like state
     const newLikeState = !liked;
     setLocalLiked(newLikeState);
     if (newLikeState) {
       sound();
     }
+
+    // Update the frontend state immediately
     dispatch(
       postsAction.Liked({
         postIndex: postIndex,
         like: newLikeState,
-        liker: userDataUserName,
+        liker: userUid,
       })
     );
 
-    // backend-logic
+    // Backend logic to update the likes count and likedBy map
     try {
       const postRef = doc(db, "post", postId);
       const postSnapshot = await getDoc(postRef);
       const postData = postSnapshot.data();
 
-      // Update the likes count and the liked field
-      let updatedLikes;
-      // Update likedBy map
-      let _likedBy = postData.likedBy;
-      if (liked) {
-        updatedLikes = postData.likes - 1;
-        delete _likedBy[`${userDataUserName}`];
-      } else {
-        updatedLikes = postData.likes + 1;
-        _likedBy[`${userDataUserName}`] = true;
+      // Initialize variables
+      let updatedLikes = postData.likes;
+      let _likedBy = { ...postData.likedBy }; // Copy likedBy map
+
+      // Check if the user already liked the post
+      const userAlreadyLiked = _likedBy[userUid];
+
+      // Update the likes count based on the current state of the likedBy map
+      if (newLikeState && !userAlreadyLiked) {
+        updatedLikes += 1;
+        _likedBy[userUid] = true; // Mark as liked by the user
+
+        // Create a notification only if the post is not by the current user
+        if (user !== userUid) {
+          const notificationRef = collection(db, "notifications");
+          await addDoc(notificationRef, {
+            type: "like",
+            senderId: userUid,
+            senderName: userData.username,
+            recipientId: user,
+            postId: postId,
+            content:
+              content.substring(0, 50) + (content.length > 50 ? "..." : ""),
+            createdAt: serverTimestamp(),
+          });
+        }
+      } else if (!newLikeState && userAlreadyLiked) {
+        updatedLikes -= 1;
+        delete _likedBy[userUid]; // Remove user from likedBy map
       }
-      // updating post obj
+
+      // Update the post document in the database
       await updateDoc(postRef, {
         likes: updatedLikes,
         likedBy: _likedBy,
@@ -92,6 +134,7 @@ const Post = ({
       console.error("Error updating document: ", error);
     }
   };
+
   const handleDeletePost = async () => {
     setLoading(true);
     try {
@@ -147,12 +190,12 @@ const Post = ({
             className="rounded-full w-8 h-8 ml-2 mt-2 border-[0.5px]"
           />
           <div className="userName mt-2 flex gap-2">
-            <div className="text-base font-medium opacity-70 flex">
+            <div className="text-base font-medium opacity flex">
               {userName}
               {(userName === "devanshVerma" ||
-                userName === "PraharshRaj" ||
+                userName === "praharshsingh07" ||
                 userName === "anush") && (
-                <FcApproval className="mt-[4px] ml-1 text-lg" />
+                <MdVerified className="mt-[5px] ml-1 text-base text-blue-500" />
               )}
             </div>
             <span className="yearInfo opacity-60 text-sm mt-[3px]">

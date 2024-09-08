@@ -1,10 +1,10 @@
 import { useSelector } from "react-redux";
+import { auth } from "../../../firebase.config";
 import Post from "./Post";
 
 const PostsList = () => {
-  const userNameData = useSelector(
-    (store) => store.userDetails.userData.username
-  );
+  const { initialPosts } = useSelector((store) => store.posts);
+
   function getTimeDifference(timestamp) {
     const now = new Date().getTime();
     const postTime = timestamp.toDate().getTime();
@@ -42,7 +42,6 @@ const PostsList = () => {
       return count.toString();
     }
   }
-  const { initialPosts } = useSelector((store) => store.posts);
   return (
     <>
       {initialPosts.map((post, postIndex) => (
@@ -50,14 +49,12 @@ const PostsList = () => {
           key={post.id}
           postId={post.id}
           postIndex={postIndex}
-          userImage={post.userImage}
+          user={post.user}
           postImage={post.postImage}
-          userName={post.userName}
-          yearInfo={post.yearInfo}
           content={post.content}
-          likedBy = {post.likedBy}
+          likedBy={post.likedBy}
           likes={formatLikeCount(post.likes)}
-          liked={post.likedBy.hasOwnProperty(`${userNameData}`)}
+          liked={post.likedBy.hasOwnProperty(auth.currentUser.uid)}
           timeAgo={getTimeDifference(post.createdAt)}
         />
       ))}

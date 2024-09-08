@@ -12,6 +12,8 @@ import Display_profile from "../Profile/Display_profile";
 import FeatureBugForm from "../FeatureBugForm";
 import DisplayOnlyProfile from "../seeProfile/DisplayOnlyProfile";
 import LikedByList from "../Discussion/Post/LikedByList";
+import NotificationPage from "../Notifications/NotificationPage";
+import SeePostFromNotify from "../Discussion/Post/SeePostFromNotify";
 
 const Router = () => {
   const { currentUser } = useContext(AuthContext);
@@ -45,6 +47,8 @@ const Router = () => {
         element={<DisplayOnlyProfile />}
       ></Route>
       <Route path="/LikedByList" element={<LikedByList />}></Route>
+      <Route path="/Notifications" element={<NotificationPage />}></Route>
+      <Route path="/SeePostFromNotify" element={<SeePostFromNotify />}></Route>
     </Routes>
   );
 };

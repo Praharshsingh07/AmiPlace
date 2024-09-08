@@ -13,7 +13,7 @@ import {
   orderBy,
   query,
 } from "firebase/firestore";
-import { db } from "../../../firebase.config";
+import { auth, db } from "../../../firebase.config";
 import LoadingCool from "../../LoadingCool";
 
 const CreatePost = () => {
@@ -66,10 +66,8 @@ const CreatePost = () => {
     setLoading(true);
     const newPost = {
       postId: -1,
-      userImage: userData.avatarURL,
+      user:auth.currentUser.uid,
       postImage: imageUrl,
-      userName: userData.username,
-      yearInfo: userData.Semister + " " + userData.Branch,
       content: postContent,
       likes: 0,
       likedBy: {},

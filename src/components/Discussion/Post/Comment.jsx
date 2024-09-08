@@ -15,24 +15,29 @@ import { db } from "../../../firebase.config";
 import { postsAction } from "../../../store/postsSlice";
 import { Link } from "react-router-dom";
 
-const Comment = ({
-  id,
-  userImage,
-  userName,
-  yearInfo,
-  comment,
-  commentImg,
-  timeAgo,
-  postId,
-}) => {
+const Comment = ({ id, user, comment, commentImg, timeAgo, postId }) => {
   const dispatch = useDispatch();
-  const userData =  useSelector(
-    (store) => store.userDetails.userData
-  );
+  const userData = useSelector((store) => store.userDetails.userData);
   const userDataUserName = userData.username;
+  const [userName, setUserName] = useState("");
+  const [userImage, setUserImage] = useState("");
+  const [yearInfo, setYearInfo] = useState("");
   const [threeDots, setThreeDots] = useState(false);
   const dropdownRef = useRef(null);
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const userDocRef = doc(db, "users", user);
+      const userDoc = await getDoc(userDocRef);
+      if (userDoc.exists()) {
+        const data = userDoc.data();
+        setUserName(data.username);
+        setUserImage(data.avatarURL);
+        setYearInfo(data.Semister + " " + data.Branch);
+      }
+    };
+    fetchUserData();
+  }, [dispatch]);
   const handleThreeDots = () => {
     setThreeDots(!threeDots);
   };
@@ -93,10 +98,12 @@ const Comment = ({
             className="rounded-full w-8 h-8 ml-2 mt-2"
           />
           <Link
-          to={`${
-            userName == userDataUserName ? "/profile" : "/DisplayOnlyProfile"
-          }`}
-          state={{ user: userName }} className="text-base font-medium opacity-70 mt-2">
+            to={`${
+              userName == userDataUserName ? "/profile" : "/DisplayOnlyProfile"
+            }`}
+            state={{ user: userName }}
+            className="text-base font-medium opacity-70 mt-2"
+          >
             {userName}
           </Link>
           <span className="yearInfo opacity-60 text-sm mt-[10px]">
