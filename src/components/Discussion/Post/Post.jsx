@@ -1,14 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { FcLikePlaceholder } from "react-icons/fc";
-import { FcLike } from "react-icons/fc";
-import { BsReply } from "react-icons/bs";
+import { FcLikePlaceholder, FcLike } from "react-icons/fc";
+import { BsReply, BsThreeDots } from "react-icons/bs";
+import { MdVerified } from "react-icons/md";
 import { postsAction } from "../../../store/postsSlice";
-import { BsThreeDots } from "react-icons/bs";
-import { FcApproval } from "react-icons/fc";
 import { useDispatch, useSelector } from "react-redux";
 import useSound from "use-sound";
 import PostOverlay from "./PostOverlay";
-import { auth, db } from "../../../firebase.config";
+import { auth, db, storage } from "../../../firebase.config";
 import {
   getDocs,
   collection,
@@ -18,45 +16,72 @@ import {
   deleteDoc,
   doc,
   getDoc,
-  where,
   addDoc,
   serverTimestamp,
 } from "firebase/firestore";
+import { ref, getDownloadURL } from "firebase/storage";
 import LoadingCool2 from "../../LoadingCool2";
 import { Link } from "react-router-dom";
-import { MdVerified } from "react-icons/md";
 
-const Post = ({
-  postId,
-  postIndex,
-  user,
-  postImage,
-  content,
-  likedBy,
-  likes,
-  liked,
-  timeAgo,
-}) => {
+const Post = ({ postData, isOverylay }) => {
   const dispatch = useDispatch();
   const userData = useSelector((store) => store.userDetails.userData);
   const userDataUserName = userData.username;
   const [loading, setLoading] = useState(false);
-  const [localLiked, setLocalLiked] = useState(liked);
+  const [localLiked, setLocalLiked] = useState(
+    postData.likedBy.hasOwnProperty(auth.currentUser.uid)
+  );
   const [threeDots, setThreeDots] = useState(false);
   const [userName, setUserName] = useState("");
   const [userImage, setUserImage] = useState("");
   const [yearInfo, setYearInfo] = useState("");
   const [isPostClicked, setIsPostClicked] = useState(false);
-  const [sound] = useSound("src/Media/multi-pop-1-188165.mp3", { volume: 0.2 });
-  const likedByUsers = Object.keys(likedBy);
+  const [likes, setLikes] = useState(postData.likes);
+  const [postImage, setPostImage] = useState("");
+  const [imageLoading, setImageLoading] = useState(false);
+  const [sound] = useSound("src/Media/multi-pop-1-188165.mp3", {
+    volume: 0.2,
+  });
+  const likedByPeople = Object.keys(postData.likedBy);
   const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const userDocRef = doc(db, "users", postData.user);
+      const userDoc = await getDoc(userDocRef);
+      if (userDoc.exists()) {
+        const data = userDoc.data();
+        setUserName(data.username);
+        setUserImage(data.avatarURL);
+        setYearInfo(data.Semister + " " + data.Branch);
+      }
+    };
+    fetchUserData();
+
+    const fetchPostImage = async () => {
+      if (postData.postImage) {
+        setImageLoading(true);
+        try {
+          const imageUrl = await getDownloadURL(
+            ref(storage, postData.postImage)
+          );
+          setPostImage(imageUrl);
+        } catch (error) {
+          console.error("Error fetching image:", error);
+        } finally {
+          setImageLoading(false);
+        }
+      }
+    };
+    fetchPostImage();
+  }, [postData.user, postData.postImage]);
 
   const handleThreeDots = () => {
     setThreeDots(!threeDots);
   };
   useEffect(() => {
     const fetchUserData = async () => {
-      const userDocRef = doc(db, "users", user);
+      const userDocRef = doc(db, "users", postData.user);
       const userDoc = await getDoc(userDocRef);
       if (userDoc.exists()) {
         const data = userDoc.data();
@@ -67,36 +92,34 @@ const Post = ({
     };
     fetchUserData();
   }, []);
-  
   const handleLike = async () => {
     // Get the user's UID
     const userUid = auth.currentUser.uid;
 
     // Toggle the frontend like state
-    const newLikeState = !liked;
+    const newLikeState = !localLiked;
     setLocalLiked(newLikeState);
     if (newLikeState) {
       sound();
+      setLikes(likes + 1);
+    } else {
+      setLikes(likes - 1);
     }
-
-    // Update the frontend state immediately
     dispatch(
       postsAction.Liked({
-        postIndex: postIndex,
+        postId: postData.id,
         like: newLikeState,
         liker: userUid,
       })
     );
-
     // Backend logic to update the likes count and likedBy map
     try {
-      const postRef = doc(db, "post", postId);
+      const postRef = doc(db, "post", postData.id);
       const postSnapshot = await getDoc(postRef);
-      const postData = postSnapshot.data();
-
+      const _postData = postSnapshot.data();
       // Initialize variables
-      let updatedLikes = postData.likes;
-      let _likedBy = { ...postData.likedBy }; // Copy likedBy map
+      let updatedLikes = _postData.likes;
+      let _likedBy = { ..._postData.likedBy }; // Copy likedBy map
 
       // Check if the user already liked the post
       const userAlreadyLiked = _likedBy[userUid];
@@ -107,16 +130,17 @@ const Post = ({
         _likedBy[userUid] = true; // Mark as liked by the user
 
         // Create a notification only if the post is not by the current user
-        if (user !== userUid) {
+        if (_postData.user !== userUid) {
           const notificationRef = collection(db, "notifications");
           await addDoc(notificationRef, {
             type: "like",
             senderId: userUid,
             senderName: userData.username,
-            recipientId: user,
-            postId: postId,
+            recipientId: _postData.user,
+            postId: postData.id,
             content:
-              content.substring(0, 50) + (content.length > 50 ? "..." : ""),
+              _postData.content.substring(0, 50) +
+              (_postData.content.length > 50 ? "..." : ""),
             createdAt: serverTimestamp(),
           });
         }
@@ -134,12 +158,10 @@ const Post = ({
       console.error("Error updating document: ", error);
     }
   };
-
   const handleDeletePost = async () => {
     setLoading(true);
     try {
-      await deleteDoc(doc(db, "post", postId));
-      console.log("Document successfully deleted!");
+      await deleteDoc(doc(db, "post", postData.id));
       // Refresh the post list after deletion
       const reloadPost = [];
       const postQuery = query(
@@ -148,11 +170,6 @@ const Post = ({
       );
       const querySnapshot = await getDocs(postQuery);
       querySnapshot.forEach((post) => {
-        if (post.data().likedBy.userDataUserName) {
-          post.data().liked = true;
-        } else {
-          post.data().liked = false;
-        }
         reloadPost.push({ ...post.data(), id: post.id });
       });
       dispatch(postsAction.addPost(reloadPost));
@@ -162,6 +179,33 @@ const Post = ({
     setLoading(false);
     setThreeDots(false);
   };
+  function getTimeDifference(timestamp) {
+    const now = new Date().getTime();
+    const postTime = timestamp.toDate().getTime();
+    const diffTime = now - postTime;
+    const minutes = Math.floor((diffTime / (1000 * 60)) % 60);
+    const hours = Math.floor((diffTime / (1000 * 60 * 60)) % 24);
+    const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    if (days > 0) {
+      return `${days}d`;
+    } else if (hours > 0) {
+      return `${hours}h`;
+    } else {
+      return `${minutes}m`;
+    }
+  }
+  function formatLikeCount(count) {
+    if (count >= 1000000000) {
+      return (count / 1000000000).toFixed(1) + "B";
+    } else if (count >= 1000000) {
+      return (count / 1000000).toFixed(1) + "M";
+    } else if (count >= 1000) {
+      return (count / 1000).toFixed(1) + "K";
+    } else {
+      return count.toString();
+    }
+  }
   useEffect(() => {
     const handleOutsideClick = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -190,12 +234,14 @@ const Post = ({
             className="rounded-full w-8 h-8 ml-2 mt-2 border-[0.5px]"
           />
           <div className="userName mt-2 flex gap-2">
-            <div className="text-base font-medium opacity flex">
-              {userName}
+            <div className="flex">
+              <span className="text-base font-medium opacity-70">
+                {userName}
+              </span>
               {(userName === "devanshVerma" ||
                 userName === "praharshsingh07" ||
                 userName === "anush") && (
-                <MdVerified className="mt-[5px] ml-1 text-base text-blue-500" />
+                <MdVerified className="mt-[5.2px] ml-1 text-base text-blue-500" />
               )}
             </div>
             <span className="yearInfo opacity-60 text-sm mt-[3px]">
@@ -205,7 +251,9 @@ const Post = ({
           </div>
         </Link>
         <div className=" mt-4 flex space-x-1 opacity-55">
-          <span className="addedTimeAgo text-sm mt-1">{timeAgo} </span>
+          <span className="addedTimeAgo text-sm mt-1">
+            {getTimeDifference(postData.createdAt)}{" "}
+          </span>
           <div
             className={`postSettings rounded-full h-7 p-1 hover:bg-white ${
               userName != userDataUserName && "hidden"
@@ -242,15 +290,23 @@ const Post = ({
         </div>
       </div>
       <p className="content border-l-2 border-gray-400 pl-3 mb-3 mx-6 py-0 overflow-hidden">
-        {content}
+        {postData.content}
       </p>
-      <div
-        className={`${
-          postImage == "" && "hidden"
-        } mb-4 border-[1px] border-gray-500 w-fit ml-8`}
-      >
-        <img src={postImage} alt="" className="max-w-80" />
-      </div>
+      {imageLoading ? (
+        <div className="mb-4 ml-8">
+          <LoadingCool2 />
+        </div>
+      ) : (
+        postImage && (
+          <div className="mb-4 border-[1px] border-gray-500 w-fit ml-8">
+            <img
+              src={postImage}
+              alt="Post image"
+              className="max-w-full h-auto"
+            />
+          </div>
+        )
+      )}
       <div className="recations flex space-x-10">
         <div className="like ml-5 flex space-x-1 mb-3">
           {localLiked === false ? (
@@ -265,13 +321,13 @@ const Post = ({
             to="/LikedByList"
             state={{
               likedBy: {
-                likedByUsers: likedByUsers,
+                likedByUsers: likedByPeople,
                 userDataUserName: userDataUserName,
               },
             }}
             className="likesCount text-sm text-gray-500 mt-[2px]"
           >
-            {likes}
+            {formatLikeCount(likes)}
             {`${likes < 2 ? " Reaction" : " Reactions"}`}
           </Link>
         </div>
@@ -285,15 +341,13 @@ const Post = ({
           </span>
         </div>
       </div>
-      <PostOverlay
-        isOpen={isPostClicked}
-        onClose={() => setIsPostClicked(!isPostClicked)}
-        postIndex={postIndex}
-        timeAgo={timeAgo}
-        postId={postId}
-        liked={localLiked}
-        likes={likes}
-      />
+      {isOverylay && (
+        <PostOverlay
+          isOpen={isPostClicked}
+          onClose={() => setIsPostClicked(!isPostClicked)}
+          postData={{ ...postData, postImage: postImage }}
+        />
+      )}
     </div>
   );
 };

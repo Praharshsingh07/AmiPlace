@@ -14,11 +14,15 @@ const NotificationPage = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [refresh, setRefresh] = useState(false);
 
+  const handleSetRefresh = async () => {
+    setRefresh(!refresh);
+  };
   useEffect(() => {
     const currentUser = auth.currentUser;
     if (!currentUser) {
-      setLoading(false);
+      setLoading();
       return;
     }
 
@@ -71,7 +75,7 @@ const NotificationPage = () => {
     };
 
     fetchNotifications();
-  }, []);
+  }, [refresh]);
 
   if (loading) {
     return <div>Loading notifications...</div>;
@@ -82,7 +86,7 @@ const NotificationPage = () => {
   }
 
   return (
-    <div className="notification-page container mx-auto max-w-2xl p-2 h-[100vh] ">
+    <div className="notification-page container mx-auto max-w-2xl p-2 h-[100vh]">
       <h1 className="text-2xl font-bold my-4">Notifications</h1>
       {notifications.length === 0 ? (
         <p className="text-center text-gray-500">No notifications yet</p>
@@ -95,6 +99,8 @@ const NotificationPage = () => {
             postId={notification.postId}
             content={notification.content}
             timeAgo={notification.createdAt.toDate().toLocaleString()}
+            notificationId={notification.id}
+            handleSetRefresh={handleSetRefresh}
           />
         ))
       )}

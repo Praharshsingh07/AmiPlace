@@ -77,9 +77,10 @@ const UserSearch = () => {
               }`}
               state={{ user: user.username }}
               key={user.id}
-              className="p-2 hover:bg-gray-100 block border-b cursor-pointer"
+              className="p-2 hover:bg-gray-100 flex border-b cursor-pointer space-x-2"
             >
-              {user.username}
+              <img src={user.avatarURL} alt="" className="w-8 h-8 rounded-full" />
+              <span className="mt-1">{user.username}</span>
             </Link>
           ))}
         </ul>
