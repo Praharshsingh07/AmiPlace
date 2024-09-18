@@ -63,7 +63,7 @@ const UserSearch = () => {
         type="text"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        placeholder="Search users..."
+        placeholder="Search users with there username only..."
         className="w-full p-2 border rounded shadow-md"
       />
       {searchResults.length > 0 && (
@@ -79,7 +79,11 @@ const UserSearch = () => {
               key={user.id}
               className="p-2 hover:bg-gray-100 flex border-b cursor-pointer space-x-2"
             >
-              <img src={user.avatarURL} alt="" className="w-8 h-8 rounded-full" />
+              <img
+                src={user.avatarURL}
+                alt=""
+                className="w-8 h-8 rounded-full"
+              />
               <span className="mt-1">{user.username}</span>
             </Link>
           ))}

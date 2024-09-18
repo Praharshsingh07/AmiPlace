@@ -103,24 +103,10 @@ const CreatePost = () => {
       setLoading(false);
       return;
     }
-
-    const reloadPost = [];
-    try {
-      const postQuery = query(
-        collection(db, "post"),
-        orderBy("createdAt", "desc")
-      );
-      const querySnapshot = await getDocs(postQuery);
-      querySnapshot.forEach((post) => {
-        reloadPost.push({ ...post.data(), id: post.id });
-      });
-      dispatch(postsAction.addPost(reloadPost));
-    } catch (e) {
-      console.error("Error fetching posts: ", e);
-    }
-
+    dispatch(postsAction.addPost(newPost));
     setLoading(false);
     dispatch(createPostActions.createPost());
+    window.location.reload(false);
   };
 
   return (
