@@ -6,7 +6,7 @@ import { postsAction } from "../../../store/postsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import useSound from "use-sound";
 import PostOverlay from "./PostOverlay";
-import { auth, db, storage } from "../../../firebase.config";
+import { auth, db } from "../../../firebase.config";
 import {
   getDocs,
   collection,
@@ -19,16 +19,13 @@ import {
   addDoc,
   serverTimestamp,
 } from "firebase/firestore";
-import { ref, getDownloadURL } from "firebase/storage";
 import LoadingCool2 from "../../LoadingCool2";
 import { Link } from "react-router-dom";
 
 const Post = React.forwardRef(({ postData, isOverlay }, ref) => {
-  // console.log("Rendering Post:", postData.id);
   const dispatch = useDispatch();
   const userData = useSelector((store) => store.userDetails.userData);
   const userDataUserName = userData.username;
-  // const [loading, setLoading] = useState(false);
   const [localLiked, setLocalLiked] = useState(
     postData.likedBy.hasOwnProperty(auth.currentUser.uid)
   );
@@ -41,6 +38,7 @@ const Post = React.forwardRef(({ postData, isOverlay }, ref) => {
   const [postImage, setPostImage] = useState("");
   const [postDeleted, setPostDeleted] = useState(false);
   const [imageLoading, setImageLoading] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const [sound] = useSound("src/Media/multi-pop-1-188165.mp3", {
     volume: 0.2,
   });
@@ -64,12 +62,12 @@ const Post = React.forwardRef(({ postData, isOverlay }, ref) => {
       if (postData.postImage) {
         setImageLoading(true);
         try {
-          const imageUrl = await getDownloadURL(
-            ref(storage, postData.postImage)
-          );
-          setPostImage(imageUrl);
+          console.log("Image URL from postData:", postData.postImage);
+          setPostImage(postData.postImage);
         } catch (error) {
-          console.error("Error fetching image:", error);
+          console.error("Error setting image:", error);
+          setPostImage(null);
+          setImageError(true);
         } finally {
           setImageLoading(false);
         }
@@ -81,24 +79,9 @@ const Post = React.forwardRef(({ postData, isOverlay }, ref) => {
   const handleThreeDots = () => {
     setThreeDots(!threeDots);
   };
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const userDocRef = doc(db, "users", postData.user);
-      const userDoc = await getDoc(userDocRef);
-      if (userDoc.exists()) {
-        const data = userDoc.data();
-        setUserName(data.username);
-        setUserImage(data.avatarURL);
-        setYearInfo(data.Semister + " " + data.Branch);
-      }
-    };
-    fetchUserData();
-  }, []);
-  const handleLike = async () => {
-    // Get the user's UID
-    const userUid = auth.currentUser.uid;
 
-    // Toggle the frontend like state
+  const handleLike = async () => {
+    const userUid = auth.currentUser.uid;
     const newLikeState = !localLiked;
     setLocalLiked(newLikeState);
     if (newLikeState) {
@@ -114,24 +97,19 @@ const Post = React.forwardRef(({ postData, isOverlay }, ref) => {
         liker: userUid,
       })
     );
-    // Backend logic to update the likes count and likedBy map
     try {
       const postRef = doc(db, "post", postData.id);
       const postSnapshot = await getDoc(postRef);
       const _postData = postSnapshot.data();
-      // Initialize variables
       let updatedLikes = _postData.likes;
-      let _likedBy = { ..._postData.likedBy }; // Copy likedBy map
+      let _likedBy = { ..._postData.likedBy };
 
-      // Check if the user already liked the post
       const userAlreadyLiked = _likedBy[userUid];
 
-      // Update the likes count based on the current state of the likedBy map
       if (newLikeState && !userAlreadyLiked) {
         updatedLikes += 1;
-        _likedBy[userUid] = true; // Mark as liked by the user
+        _likedBy[userUid] = true;
 
-        // Create a notification only if the post is not by the current user
         if (_postData.user !== userUid) {
           const notificationRef = collection(db, "notifications");
           await addDoc(notificationRef, {
@@ -148,10 +126,9 @@ const Post = React.forwardRef(({ postData, isOverlay }, ref) => {
         }
       } else if (!newLikeState && userAlreadyLiked) {
         updatedLikes -= 1;
-        delete _likedBy[userUid]; // Remove user from likedBy map
+        delete _likedBy[userUid];
       }
 
-      // Update the post document in the database
       await updateDoc(postRef, {
         likes: updatedLikes,
         likedBy: _likedBy,
@@ -160,6 +137,7 @@ const Post = React.forwardRef(({ postData, isOverlay }, ref) => {
       console.error("Error updating document: ", error);
     }
   };
+
   const handleDeletePost = async () => {
     try {
       await deleteDoc(doc(db, "post", postData.id));
@@ -169,6 +147,7 @@ const Post = React.forwardRef(({ postData, isOverlay }, ref) => {
     }
     setThreeDots(false);
   };
+
   function getTimeDifference(timestamp) {
     const now = new Date().getTime();
     let postTime;
@@ -193,6 +172,7 @@ const Post = React.forwardRef(({ postData, isOverlay }, ref) => {
       return `${minutes}m`;
     }
   }
+
   function formatLikeCount(count) {
     if (count >= 1000000000) {
       return (count / 1000000000).toFixed(1) + "B";
@@ -204,18 +184,19 @@ const Post = React.forwardRef(({ postData, isOverlay }, ref) => {
       return count.toString();
     }
   }
+
   useEffect(() => {
     const handleOutsideClick = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setThreeDots(false);
       }
-      ``;
     };
     document.addEventListener("mousedown", handleOutsideClick);
     return () => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
   }, []);
+
   return (
     <div
       ref={ref}
@@ -246,8 +227,7 @@ const Post = React.forwardRef(({ postData, isOverlay }, ref) => {
                     {userName}
                   </span>
                   {(userName === "devanshVerma" ||
-                    userName === "praharshsingh07" ||
-                    userName === "anush") && (
+                    userName === "praharshsingh07") && (
                     <MdVerified className="mt-[5.2px] ml-1 text-base text-blue-500" />
                   )}
                 </div>
@@ -302,17 +282,22 @@ const Post = React.forwardRef(({ postData, isOverlay }, ref) => {
             <div className="mb-4 ml-8">
               <LoadingCool2 />
             </div>
+          ) : postImage ? (
+            <div className="mb-4 border-[1px] border-gray-500 w-fit ml-8">
+              <img
+                src={postImage}
+                alt="Post image"
+                className="max-w-lg h-auto"
+                onError={(e) => {
+                  console.error("Error loading image:", e);
+                  setImageError(true);
+                }}
+              />
+            </div>
+          ) : imageError ? (
+            <div>Error loading image</div>
           ) : (
-            postImage && (
-              <div className="mb-4 border-[1px] border-gray-500 w-fit ml-8">
-                {console.log(postImage)}
-                <img
-                  src={postImage}
-                  alt="Post image"
-                  className="max-w-full h-auto"
-                />
-              </div>
-            )
+            <div></div>
           )}
           <div className="recations flex space-x-10">
             <div className="like ml-5 flex space-x-1 mb-3">
@@ -360,4 +345,5 @@ const Post = React.forwardRef(({ postData, isOverlay }, ref) => {
     </div>
   );
 });
+
 export default Post;

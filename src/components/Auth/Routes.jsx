@@ -6,7 +6,6 @@ import Forgot_pass from "./Forgot_pass";
 import Dashboard from "../Discussion/Dashboard";
 import { AuthContext } from "./AuthContext";
 import PrivateRoute from "./PrivateRoute";
-import EmailVerify from "./email";
 import CompaniesMain from "../Companies/CompaniesMain";
 import Display_profile from "../Profile/Display_profile";
 import FeatureBugForm from "../FeatureBugForm";
@@ -39,11 +38,10 @@ const Router = () => {
           currentUser && currentUser.emailVerified ? (
             <Navigate to="/dashboard" />
           ) : (
-              <Login />
+            <Login />
           )
         }
       />
-      <Route path="/EmailVerify" element={<EmailVerify />} />
       <Route
         path="/Forgot_pass"
         element={

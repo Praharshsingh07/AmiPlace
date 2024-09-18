@@ -173,8 +173,7 @@ const UserAvatar = () => {
             <span className="text-xl font-semibold flex">
               ~ {username || "No username set"}
               {(username === "devanshVerma" ||
-                username === "praharshsingh07" ||
-                username === "anush") && (
+                username === "praharshsingh07") && (
                 <MdVerified className="mt-[7px] ml-1 text-lg text-blue-500" />
               )}
             </span>
