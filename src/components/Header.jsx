@@ -36,7 +36,7 @@ const Header = ({ HeaderClassNames }) => {
           <div className="appName">
             <span className="text-xl">AMIPLACE</span>
             <div className="slogan text-xs opacity-50">
-              Place where your career starts
+              Place where your career starts!
             </div>
           </div>
         </div>
