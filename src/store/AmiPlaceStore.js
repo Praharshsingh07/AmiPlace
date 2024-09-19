@@ -6,8 +6,11 @@ import createPostSlice from "./createPostSlice";
 import blogDataSlice from "./blogDataSlice";
 import universalClickSlice from "./universalClickSlice";
 import companiesDataSlice from "./companiesDataSlice";
-import AboutYouReducer from "./features/About_you_info/AboutYouSlice";
+import AboutYouSlice from "./features/About_you_info/AboutYouSlice";
 import KeySkillsInfoReducer from "./features/Key_Skills/KeySkills_features";
+import { enableMapSet } from "immer";
+
+enableMapSet();
 
 const amiPlaceStore = configureStore({
   reducer: {
@@ -18,7 +21,7 @@ const amiPlaceStore = configureStore({
     createPost: createPostSlice.reducer,
     universalClick: universalClickSlice.reducer,
     companiesData: companiesDataSlice.reducer,
-    AboutYou: AboutYouReducer,
+    AboutYou: AboutYouSlice.reducer,
     KeySkillsData: KeySkillsInfoReducer,
   },
 });

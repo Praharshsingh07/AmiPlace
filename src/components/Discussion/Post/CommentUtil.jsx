@@ -9,18 +9,15 @@ import {
   collection,
   doc,
   getDoc,
-  getDocs,
-  orderBy,
-  query,
   serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
 import { postsAction } from "../../../store/postsSlice";
 
-const CommentUtil = ({ yourImg, postId }) => {
+const CommentUtil = ({ postId }) => {
   const dispatch = useDispatch();
   const userData = useSelector((store) => store.userDetails.userData);
-
+  const yourImg = userData.avatarURL;
   const [commentInput, setCommentInput] = useState("");
   const [commentImageUrl, setCommentImageUrl] = useState("");
 
@@ -57,6 +54,8 @@ const CommentUtil = ({ yourImg, postId }) => {
       await updateDoc(postRef, {
         comments: arrayUnion(newComment),
       });
+      // font-end logic (redux-store)
+      dispatch(postsAction.addComment({ postId, newComment }));
 
       // Get the post author's ID
       const postSnapshot = await getDoc(postRef);
@@ -81,25 +80,13 @@ const CommentUtil = ({ yourImg, postId }) => {
 
       // Reset the comment input and image
       handleCancel();
-
-      // Reload the posts
-      const reloadPost = [];
-      const postQuery = query(
-        collection(db, "post"),
-        orderBy("createdAt", "desc")
-      );
-      const querySnapshot = await getDocs(postQuery);
-      querySnapshot.forEach((post) => {
-        reloadPost.push({ ...post.data(), id: post.id });
-      });
-      dispatch(postsAction.addPost(reloadPost));
     } catch (error) {
       console.error("Error adding comment:", error);
     }
   };
 
   return (
-    <div className="comment__Area w-full p-5 flex space-x-5">
+    <div className="comment__Area w-full p-5 flex space-x-5 bg-white">
       <div className="userImage">
         <img
           src={yourImg}
@@ -145,9 +132,10 @@ const CommentUtil = ({ yourImg, postId }) => {
               Cancel
             </button>
             <button
-              className="Comment border-[1px] border-gray-400 py-2 px-3 rounded-md bg-[#979797] text-white font-medium"
+              className="Comment border-[1px] disabled:bg-gray-300 disabled:border-none disabled:cursor-not-allowed border-gray-400 py-2 px-3 rounded-md bg-[#979797] text-white font-medium"
               type="button"
               onClick={() => handleAddComment()}
+              disabled={commentInput.length < 1}
             >
               Comment
             </button>

@@ -6,10 +6,6 @@ import {
   updateDoc,
   arrayRemove,
   getDoc,
-  query,
-  orderBy,
-  collection,
-  getDocs,
 } from "firebase/firestore";
 import { db } from "../../../firebase.config";
 import { postsAction } from "../../../store/postsSlice";
@@ -43,33 +39,24 @@ const Comment = ({ id, user, comment, commentImg, timeAgo, postId }) => {
   };
 
   const handleDeleteComment = async () => {
-    const postRef = doc(db, "post", postId);
-    const postSnapshot = await getDoc(postRef);
-
-    const commentQuery = postSnapshot
-      .data()
-      .comments.find((comment) => comment.id == id);
-    if (commentQuery) {
-      updateDoc(postRef, {
-        comments: arrayRemove(commentQuery),
-      }).catch((error) => {
-        console.error("Error deleting comment: ", error);
-      });
-    } else {
-      console.log("Comment not found");
-    }
-    // fetch posts from db
-    const reloadPost = [];
     try {
-      const postQuery = query(
-        collection(db, "post"),
-        orderBy("createdAt", "desc")
-      );
-      const querySnapshot = await getDocs(postQuery);
-      querySnapshot.forEach((post) => {
-        reloadPost.push({ ...post.data(), id: post.id });
-      });
-      dispatch(postsAction.addPost(reloadPost));
+      const postRef = doc(db, "post", postId);
+      const postSnapshot = await getDoc(postRef);
+
+      const commentQuery = postSnapshot
+        .data()
+        .comments.find((comment) => comment.id == id);
+      if (commentQuery) {
+        updateDoc(postRef, {
+          comments: arrayRemove(commentQuery),
+        }).catch((error) => {
+          console.error("Error deleting comment: ", error);
+        });
+      } else {
+        console.log("Comment not found");
+      }
+      // Font-end logic (redux-store)
+      dispatch(postsAction.deleteComment({ postId, id }));
     } catch (e) {
       console.error("Error adding document: ", e);
     }
