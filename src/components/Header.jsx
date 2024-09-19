@@ -30,8 +30,8 @@ const Header = ({ HeaderClassNames }) => {
       <nav className={`${HeaderClassNames} flex items-center justify-between`}>
         {/* Logo and App Name */}
         <div className="logo flex items-center space-x-1 ml-5">
-          <div className="img w-7">
-            <img src alt="logo" />
+          <div className="img w-10">
+            <img src={"/dist/assets/amity_logo-m7_OLHai.jpg"} alt="logo"/>
           </div>
           <div className="appName">
             <span className="text-xl">AMIPLACE</span>
