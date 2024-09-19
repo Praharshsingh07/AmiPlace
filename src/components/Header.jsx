@@ -31,7 +31,7 @@ const Header = ({ HeaderClassNames }) => {
         {/* Logo and App Name */}
         <div className="logo flex items-center space-x-2 ml-5">
           <div className="img w-10">
-            <img src={"/dist/assets/amity_logo-m7_OLHai.jpg"} alt="logo"/>
+            <img src={"/dist/assets/amity_logo-m7_OLHai.jpg"} alt="logo" />
           </div>
           <div className="appName">
             <span className="text-xl">AMIPLACE</span>
@@ -95,6 +95,7 @@ const Header = ({ HeaderClassNames }) => {
               <CgOrganisation className="text-xl" />
               <span>Companies</span>
             </Link>
+            {/* done */}
             <button
               onClick={handleLogout}
               className="flex text-gray-800 text-base focus:outline-none w-full text-left space-x-2"
