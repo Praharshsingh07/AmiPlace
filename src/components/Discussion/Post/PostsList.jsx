@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Post from "./Post";
 import { fetchInitialPosts, fetchMorePosts } from "../../../store/postsSlice";
-import PostFetchingSpinner from "../../PostFetchingSpinner";
-import CommunityFooter from "../../CommunityFooter";
+import PostFetchingSpinner from "../../xyzComponents/PostFetchingSpinner";
+import CommunityFooter from "../../xyzComponents/CommunityFooter";
 
 const PostsList = () => {
   const dispatch = useDispatch();

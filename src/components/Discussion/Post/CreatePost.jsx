@@ -6,16 +6,13 @@ import { FcCheckmark } from "react-icons/fc";
 import { createPostActions } from "../../../store/createPostSlice";
 import { postsAction } from "../../../store/postsSlice";
 import {
-  getDocs,
   addDoc,
   collection,
   serverTimestamp,
-  orderBy,
-  query,
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { auth, db, storage } from "../../../firebase.config";
-import LoadingCool from "../../LoadingCool";
+import LoadingCool from "../../xyzComponents/LoadingCool";
 
 const CreatePost = () => {
   const dispatch = useDispatch();

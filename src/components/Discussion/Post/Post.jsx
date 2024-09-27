@@ -16,7 +16,7 @@ import {
   addDoc,
   serverTimestamp,
 } from "firebase/firestore";
-import LoadingCool2 from "../../LoadingCool2";
+import LoadingCool2 from "../../xyzComponents/LoadingCool2";
 import { Link } from "react-router-dom";
 
 const Post = React.forwardRef(({ postData, isOverlay }, ref) => {
