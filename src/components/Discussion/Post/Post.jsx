@@ -262,10 +262,7 @@ const Post = React.forwardRef(({ postData, isOverlay }, ref) => {
               ) : (
                 <FcLike className="text-2xl" onClick={() => handleLike()} />
               )}
-              <div className="group relative">
-                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-gray-700 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-                  See people who reacted
-                </div>
+              <div>
                 <Link
                   to="/LikedByList"
                   state={{
@@ -274,8 +271,11 @@ const Post = React.forwardRef(({ postData, isOverlay }, ref) => {
                       userDataUserName: userDataUserName,
                     },
                   }}
-                  className="likesCount text-sm text-gray-500 mt-[2px]"
+                  className="group relative likesCount text-sm text-gray-500 mt-[2px]"
                 >
+                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-gray-700 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                    See people who reacted
+                  </div>
                   {formatLikeCount(likes)}
                   {`${likes < 2 ? " Reaction" : " Reactions"}`}
                 </Link>
