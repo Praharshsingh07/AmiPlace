@@ -25,6 +25,7 @@ jobs:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_AMIPLACE_3C576 }} # Your Firebase service account secret
           projectId: amiplace-3c576
+          channelId: live
           apiKey: ${{ secrets.VITE_FIREBASE_API_KEY }}                # Use secret for Firebase API key
           authDomain: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}        # Use secret for Auth domain
           storageBucket: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}  # Use secret for Storage bucket
