@@ -14,6 +14,7 @@ import {
   getDocs,
 } from "firebase/firestore";
 import { MdVerified } from "react-icons/md";
+import { PiCodeDuotone } from "react-icons/pi";
 
 const UserAvatar = () => {
   const [avatarURL, setAvatarURL] = useState(null);
@@ -22,6 +23,8 @@ const UserAvatar = () => {
   const [oldUsername, setOldUsername] = useState("");
   const [isEditingUsername, setIsEditingUsername] = useState(false);
   const [usernameError, setUsernameError] = useState(null);
+  const [verified, setVerified] = useState(false);
+  const [dev, setDev] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -31,6 +34,8 @@ const UserAvatar = () => {
         const userDoc = await getDoc(userDocRef);
         if (userDoc.exists()) {
           const userData = userDoc.data();
+          setVerified(userData.Verified);
+          setDev(userData.dev);
           if (userData.avatarURL) {
             setAvatarURL(userData.avatarURL);
           }
@@ -66,7 +71,8 @@ const UserAvatar = () => {
   };
 
   const handleUsernameChange = (e) => {
-    setUsername(e.target.value);
+    const newUsername = e.target.value.toLowerCase().trim();
+    setUsername(newUsername);
     setUsernameError(null); // Clear any previous errors when the user starts typing
   };
 
@@ -74,14 +80,38 @@ const UserAvatar = () => {
     const usersRef = collection(db, "users");
     const q = query(usersRef, where("username", "==", username));
     const querySnapshot = await getDocs(q);
-    return querySnapshot.empty;
+    return (
+      querySnapshot.empty || querySnapshot.docs[0].id == auth.currentUser.uid
+    );
   };
 
   const handleUsernameSubmit = async () => {
     try {
       setUsernameError(null);
+      const regex1 = /^[a-zA-Z0-9._]+$/;
+      const regex2 = /^(?![_\.]+$)[a-zA-Z0-9._]+$/;
+      const regex3 = /^(?!\.)([a-zA-Z0-9._]*)(?<!\.)$/;
+      const regex4 = /^(?!.*\.\.)([a-zA-Z0-9._]+)$/;
+
       if (!username.trim()) {
         setUsernameError("Username cannot be empty.");
+        return;
+      }
+
+      if (!regex1.test(username)) {
+        setUsernameError("Special characters not allowed!");
+        return;
+      }
+      if (!regex2.test(username)) {
+        setUsernameError("Please combine aphanumeric characters");
+        return;
+      }
+      if (!regex3.test(username)) {
+        setUsernameError("leading and trailing periods are not allowed!");
+        return;
+      }
+      if (!regex4.test(username)) {
+        setUsernameError("Consicutive special characters not allowed!");
         return;
       }
 
@@ -96,15 +126,17 @@ const UserAvatar = () => {
       const user = auth.currentUser;
       if (user) {
         const userDocRef = doc(db, "users", user.uid);
-        await updateDoc(userDocRef, { username: username });
+        await updateDoc(userDocRef, { username: username, Verified: false });
         await updateAndStoreUserData({ username: username });
         setIsEditingUsername(false);
+        setOldUsername(username);
       }
     } catch (error) {
       console.error("Error updating username:", error);
       setUsernameError("Failed to update username. Please try again.");
     }
   };
+
   const handleCancelEdit = () => {
     setIsEditingUsername(false);
     setUsername(oldUsername);
@@ -113,12 +145,12 @@ const UserAvatar = () => {
 
   return (
     <div className="items-center justify-center w-full h-3/5 sm:w-1/3 md:w-1/3 lg:w-1/3 m-3 rounded-2xl p-4">
-      <div className="w-full max-w-[240px] aspect-square mb-5 rounded-full overflow-hidden border-4 border-blue-400 mx-auto">
+      <div className="w-full max-w-[240px] aspect-square mb-5 overflow-hidden mx-auto">
         {avatarURL ? (
           <img
             src={avatarURL}
             alt="User Avatar"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover border-4 border-blue-400 rounded-full"
           />
         ) : (
           <Lottie
@@ -152,6 +184,7 @@ const UserAvatar = () => {
               value={username}
               onChange={handleUsernameChange}
               className="border rounded px-2 py-1 text-sm"
+              placeholder="Enter a username"
             />
             <div className="flex space-x-2">
               <button
@@ -164,7 +197,7 @@ const UserAvatar = () => {
                 onClick={handleCancelEdit}
                 className="text-sm text-red-600 mt-2"
               >
-                cancel
+                Cancel
               </button>
             </div>
 
@@ -173,17 +206,23 @@ const UserAvatar = () => {
             )}
           </div>
         ) : (
-          <div className="flex items-center mt-2">
+          <div className="flex flex-col items-center mt-2">
             <span className="text-xl font-semibold flex">
               ~ {username || "No username set"}
-              {(username === "devanshVerma" ||
-                username === "praharshsingh07") && (
-                <MdVerified className="mt-[7px] ml-1 text-lg text-blue-500" />
+              {verified && (
+                <>
+                  <MdVerified className="mt-2 ml-[2px] text-[17px] text-blue-500" />
+                  {dev && (
+                    <span className=" mt-1 mx-1">
+                      <PiCodeDuotone className="text-2xl font-semibold" />
+                    </span>
+                  )}
+                </>
               )}
             </span>
             <button
               onClick={() => setIsEditingUsername(true)}
-              className="ml-2 bg-blue-500 text-white px-2 py-1 rounded text-xs"
+              className=" mt-2 bg-gray-400 text-white px-2 py-1 rounded text-xs"
             >
               Edit
             </button>

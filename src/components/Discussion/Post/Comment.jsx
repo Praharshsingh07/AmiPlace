@@ -1,39 +1,61 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { BsThreeDots } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  doc,
-  updateDoc,
-  arrayRemove,
-  getDoc,
-} from "firebase/firestore";
-import { db } from "../../../firebase.config";
+import { doc, updateDoc, arrayRemove, getDoc } from "firebase/firestore";
+import { auth, db } from "../../../firebase.config";
 import { postsAction } from "../../../store/postsSlice";
 import { Link } from "react-router-dom";
+import { MdVerified } from "react-icons/md";
+import { BiUpvote, BiSolidUpvote } from "react-icons/bi";
+import { PiCodeDuotone } from "react-icons/pi";
 
-const Comment = ({ id, user, comment, commentImg, timeAgo, postId }) => {
+const Comment = ({ comment, postId }) => {
   const dispatch = useDispatch();
   const userData = useSelector((store) => store.userDetails.userData);
   const userDataUserName = userData.username;
-  const [userName, setUserName] = useState("");
-  const [userImage, setUserImage] = useState("");
-  const [yearInfo, setYearInfo] = useState("");
   const [threeDots, setThreeDots] = useState(false);
+  const [upVoted, setUpvoted] = useState(
+    comment.upVotedBy?.hasOwnProperty(auth.currentUser.uid) || false
+  );
+  const [upVotes, setUpvotes] = useState(comment.upVotes || 0);
   const dropdownRef = useRef(null);
+  const commentText = comment.commentContent.replace(/\n/g, "<br>");
 
-  useEffect(() => {
+  const memoizedUserData = useMemo(() => {
     const fetchUserData = async () => {
-      const userDocRef = doc(db, "users", user);
+      const userDocRef = doc(db, "users", comment.user);
       const userDoc = await getDoc(userDocRef);
       if (userDoc.exists()) {
         const data = userDoc.data();
-        setUserName(data.username);
-        setUserImage(data.avatarURL);
-        setYearInfo(data.Semister + " " + data.Branch);
+        return {
+          verified: data.Verified,
+          userName: data.username,
+          userImage: data.avatarURL,
+          yearInfo: data.Semester + " " + data.Branch,
+          dev: data.dev,
+        };
       }
+      return null;
     };
-    fetchUserData();
-  }, [dispatch]);
+    return fetchUserData();
+  }, [comment.user]);
+
+  const [userInfo, setUserInfo] = useState({
+    verified: false,
+    userName: "",
+    userImage: "",
+    yearInfo: "",
+    dev: false,
+  });
+
+  useEffect(() => {
+    memoizedUserData.then((data) => {
+      if (data) {
+        setUserInfo(data);
+      }
+    });
+  }, [memoizedUserData]);
+
   const handleThreeDots = () => {
     setThreeDots(!threeDots);
   };
@@ -45,7 +67,7 @@ const Comment = ({ id, user, comment, commentImg, timeAgo, postId }) => {
 
       const commentQuery = postSnapshot
         .data()
-        .comments.find((comment) => comment.id == id);
+        .comments.find((com) => com.id == comment.id);
       if (commentQuery) {
         updateDoc(postRef, {
           comments: arrayRemove(commentQuery),
@@ -55,13 +77,72 @@ const Comment = ({ id, user, comment, commentImg, timeAgo, postId }) => {
       } else {
         console.log("Comment not found");
       }
-      // Font-end logic (redux-store)
-      dispatch(postsAction.deleteComment({ postId, id }));
+      dispatch(postsAction.deleteComment({ postId: postId, id: comment.id }));
     } catch (e) {
-      console.error("Error adding document: ", e);
+      console.error("Error deleting document: ", e);
     }
     handleThreeDots();
   };
+
+  const handleUpvote = async () => {
+    const userUid = auth.currentUser.uid;
+    const newUpvoteState = !upVoted;
+    setUpvoted(newUpvoteState);
+
+    const newUpvotes = newUpvoteState ? upVotes + 1 : upVotes - 1;
+    setUpvotes(newUpvotes);
+
+    dispatch(
+      postsAction.upVotedComment({
+        postId: postId,
+        commentId: comment.id,
+        upVoted: newUpvoteState,
+        upVoter: userUid,
+      })
+    );
+
+    try {
+      const postRef = doc(db, "post", postId);
+      const postSnapshot = await getDoc(postRef);
+      const postData = postSnapshot.data();
+      const updatedComments = postData.comments.map((c) => {
+        if (c.id === comment.id) {
+          let updatedUpVotedBy = { ...(c.upVotedBy || {}) };
+
+          if (newUpvoteState) {
+            updatedUpVotedBy[userUid] = true;
+          } else {
+            delete updatedUpVotedBy[userUid];
+          }
+
+          return { ...c, upVotes: newUpvotes, upVotedBy: updatedUpVotedBy };
+        }
+        return c;
+      });
+
+      await updateDoc(postRef, { comments: updatedComments });
+    } catch (error) {
+      console.error("Error updating document: ", error);
+    }
+  };
+
+  function getTimeDifference(timestamp) {
+    const now = new Date().getTime();
+    const postTime = timestamp;
+    const diffTime = now - postTime;
+
+    const minutes = Math.floor((diffTime / (1000 * 60)) % 60);
+    const hours = Math.floor((diffTime / (1000 * 60 * 60)) % 24);
+    const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    if (days > 0) {
+      return `${days}d`;
+    } else if (hours > 0) {
+      return `${hours}h`;
+    } else {
+      return `${minutes}m`;
+    }
+  }
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
@@ -80,28 +161,42 @@ const Comment = ({ id, user, comment, commentImg, timeAgo, postId }) => {
       <div className="userInfo space-x-2 flex justify-between pt-2">
         <div className="userName flex gap-2">
           <img
-            src={userImage}
+            src={userInfo.userImage}
             alt="user_ki_photu"
             className="rounded-full w-8 h-8 ml-2 mt-2"
           />
           <Link
             to={`${
-              userName == userDataUserName ? "/profile" : "/DisplayOnlyProfile"
+              userInfo.userName == userDataUserName
+                ? "/profile"
+                : "/DisplayOnlyProfile"
             }`}
-            state={{ user: userName }}
-            className="text-base font-medium opacity-70 mt-2"
+            state={{ user: userInfo.userName }}
+            className="text-base font-medium  mt-2 flex"
           >
-            {userName}
+            <span className="opacity-70">{userInfo.userName}</span>
+            {userInfo.verified && (
+              <>
+                {userInfo.dev && (
+                  <span className=" mt-[5px] mx-1">
+                    <PiCodeDuotone className="text-lg font-semibold" />
+                  </span>
+                )}
+                <MdVerified className="mt-[5.3px] ml-[2px] text-[15px] text-blue-500" />
+              </>
+            )}
           </Link>
           <span className="yearInfo opacity-60 text-sm mt-[10px]">
-            ~ sem {yearInfo}
+            ~ sem {userInfo.yearInfo}
           </span>
         </div>
         <div className="flex opacity-55 space-x-1 pr-4">
-          <span className="addedTimeAgo text-sm mt-1">{timeAgo} </span>
+          <span className="addedTimeAgo text-sm mt-1">
+            {getTimeDifference(comment.createdAt)}{" "}
+          </span>
           <div
             className={`postSettings rounded-full h-7 p-1 hover:bg-white ${
-              userName !== userDataUserName && "hidden"
+              userInfo.userName !== userDataUserName && "hidden"
             }`}
             onClick={handleThreeDots}
           >
@@ -132,14 +227,32 @@ const Comment = ({ id, user, comment, commentImg, timeAgo, postId }) => {
         </div>
       </div>
       <p className="comment-content opacity-85 ml-12 pb-3  mr-8 pr-0 ">
-        {comment}
+        <p dangerouslySetInnerHTML={{ __html: commentText }}></p>
         <img
-          src={commentImg}
+          src={comment.commentImg}
           alt=""
-          className={`${!commentImg && "hidden"} w-48`}
+          className={`${!comment.commentImg && "hidden"} w-48`}
         />
       </p>
+      <div className="upVote flex justify-end">
+        <div className="flex mr-5 mb-2">
+          <span className="text-sm mr-1">Upvote </span>
+          {upVoted ? (
+            <BiSolidUpvote
+              onClick={handleUpvote}
+              className="text-lg cursor-pointer"
+            />
+          ) : (
+            <BiUpvote
+              onClick={handleUpvote}
+              className="text-lg cursor-pointer"
+            />
+          )}
+          <span className="text-sm">{upVotes}</span>
+        </div>
+      </div>
     </div>
   );
 };
+
 export default Comment;

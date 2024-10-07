@@ -1,29 +1,42 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import About_You from "./overlays/About_You";
 import { auth, db } from "../../firebase.config";
 import { doc, getDoc } from "firebase/firestore";
 import { IoMdMale, IoMdFemale } from "react-icons/io";
-import { useSelector } from "react-redux";
 
 const UserBasicInfo = () => {
   const [showModal, setShowModal] = useState(false);
   const [userData, setUserData] = useState({});
-  const reduxUserData = useSelector((store) => store.userDetails.userData);
+  const [toggle, setToggle] = useState(false);
 
+  const refresh = () => {
+    setToggle(!toggle);
+  };
   useEffect(() => {
     const fetchUserData = async () => {
-      setUserData(reduxUserData);
       const user = auth.currentUser;
       if (user) {
         const userDocRef = doc(db, "users", user.uid);
-        const userDoc = await getDoc(userDocRef);
-        if (userDoc.exists()) {
-          setUserData(userDoc.data());
+        try {
+          const userDoc = await getDoc(userDocRef);
+          if (userDoc.exists()) {
+            setUserData(userDoc.data());
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
         }
       }
     };
 
     fetchUserData();
+  }, [toggle]);
+
+  const handleEditClick = useCallback(() => {
+    setShowModal(true);
+  }, []);
+
+  const handleCloseModal = useCallback(() => {
+    setShowModal(false);
   }, []);
 
   const InfoItem = ({ label, value, icon }) => (
@@ -41,7 +54,7 @@ const UserBasicInfo = () => {
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold text-gray-800">Basic Information</h2>
         <button
-          onClick={() => setShowModal(true)}
+          onClick={handleEditClick}
           className="text-blue-500 hover:text-blue-700"
         >
           <i className="ri-edit-2-fill text-xl"></i>
@@ -51,7 +64,7 @@ const UserBasicInfo = () => {
         <InfoItem label="Name" value={userData.FullName} />
         <InfoItem label="Course Name" value={userData.Course} />
         <InfoItem label="Branch" value={userData.Branch} />
-        <InfoItem label="Semester" value={userData.Semister} />
+        <InfoItem label="Semester" value={userData.Semester} />
         <InfoItem label="Specialization" value={userData.Specialization} />
         <InfoItem
           label="Gender"
@@ -65,8 +78,14 @@ const UserBasicInfo = () => {
           }
         />
         <InfoItem label="DOB" value={userData.DOB} />
+        <InfoItem label="Enrollment Number" value={userData.EnrollmentNumber} />
+        <InfoItem label="Personal Email" value={userData.PersonalEmail} />
       </div>
-      <About_You isVisible={showModal} onClose={() => setShowModal(false)} />
+      <About_You
+        isVisible={showModal}
+        onClose={handleCloseModal}
+        refresh={refresh}
+      />
     </div>
   );
 };

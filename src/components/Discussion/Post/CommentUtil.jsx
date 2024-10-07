@@ -46,6 +46,8 @@ const CommentUtil = ({ postId }) => {
       user: auth.currentUser.uid,
       commentContent: commentInput,
       commentImg: commentImageUrl,
+      upVotes: 0,
+      upVotedBy: {},
       createdAt: new Date().getTime(),
     };
 
@@ -96,7 +98,7 @@ const CommentUtil = ({ postId }) => {
       </div>
       <div className="comment__Box w-full">
         <textarea
-          className="comment__input border-[1px] border-gray-400 w-full rounded-md resize-none focus:outline-none p-2"
+          className="comment__input border-[1px] border-gray-400 w-full rounded-md resize-none focus:outline-none p-2 whitespace-pre-wrap"
           rows="3"
           value={commentInput}
           onChange={(e) => setCommentInput(e.target.value)}

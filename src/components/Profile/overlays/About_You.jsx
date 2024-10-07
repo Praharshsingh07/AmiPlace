@@ -1,181 +1,331 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { useRef } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { RxCross2 } from "react-icons/rx";
+import { auth, db } from "../../../firebase.config";
+import { doc, getDoc } from "firebase/firestore";
 import { updateAndStoreUserData } from "../../../utils";
-import { InfoAction } from "../../../store/features/About_you_info/AboutYouSlice";
 
-const About_You = ({ isVisible, onClose }) => {
+const About_You = ({ isVisible, onClose, refresh }) => {
+  const [formData, setFormData] = useState({
+    FullName: "",
+    Course: "",
+    Branch: "",
+    Semester: "",
+    Specialization: "",
+    Gender: "",
+    DOB: "",
+    PersonalEmail: "",
+    EnrollmentNumber: "",
+  });
+
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const branches = [
+    "CSE",
+    "ECE",
+    "ME",
+    "Civil Er.",
+    "EE",
+    "Chemical Er.",
+    "Other",
+  ];
+  const specializations = ["AI&ML", "Data Science", "IOT", "Other"];
+  const courses = ["B.Tech", "Other"];
+  const semesters = Array.from({ length: 8 }, (_, i) => i + 1);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const user = auth.currentUser;
+      if (user) {
+        const userDocRef = doc(db, "users", user.uid);
+        try {
+          const userDoc = await getDoc(userDocRef);
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            setFormData((prevData) => ({
+              ...prevData,
+              ...userData,
+              Course: userData.Course || "B.Tech",
+            }));
+          }
+        } catch (error) {
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            fetch: "Failed to fetch user data. Please try again.",
+          }));
+        }
+      }
+    };
+    if (isVisible) {
+      fetchUserData();
+    }
+  }, [isVisible]);
+
+  const validateFullName = useCallback((name) => {
+    const regex = /^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/;
+    return regex.test(name);
+  }, []);
+
+  const validateEmail = useCallback((email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  }, []);
+
+  const handleChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: null,
+    }));
+  }, []);
+
+  const handleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
+      const newErrors = {};
+
+      if (!validateFullName(formData.FullName)) {
+        newErrors.FullName = "Please enter a valid full name.";
+      }
+      if (!formData.Course) {
+        newErrors.Course = "Please select your course.";
+      }
+      if (!formData.Branch) {
+        newErrors.Branch = "Please select your branch.";
+      }
+      if (!formData.Semester) {
+        newErrors.Semester = "Please select your semester.";
+      }
+      if (!formData.Specialization) {
+        newErrors.Specialization = "Please select your specialization.";
+      }
+      if (!validateEmail(formData.PersonalEmail)) {
+        newErrors.PersonalEmail = "Please enter a valid email address.";
+      }
+
+      if (Object.keys(newErrors).length === 0) {
+        setIsSubmitting(true);
+        try {
+          await updateAndStoreUserData(formData);
+          onClose();
+        } catch (error) {
+          setErrors({
+            submit: "Failed to update user data. Please try again.",
+          });
+        } finally {
+          refresh();
+          setIsSubmitting(false);
+        }
+      } else {
+        setErrors(newErrors);
+      }
+    },
+    [formData, validateFullName, validateEmail, onClose]
+  );
+
   if (!isVisible) return null;
 
-  const dispatch = useDispatch();
-  const FullNameInput = useRef();
-  const CourseInput = useRef();
-  const BranchInput = useRef();
-  const SemesterInput = useRef();
-  const SpecializationInput = useRef();
-  const [gender, setGender] = useState("");
-  const DOBInput = useRef();
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const userData = {
-      FullName: FullNameInput.current.value,
-      Course: CourseInput.current.value,
-      Branch: BranchInput.current.value,
-      Semester: SemesterInput.current.value,
-      Specialization: SpecializationInput.current.value,
-      Gender: gender,
-      DOB: DOBInput.current.value,
-    };
-    updateAndStoreUserData(userData);
-    dispatch(InfoAction.HandleInputForm(userData));
-    onClose();
-  };
   return (
-    <>
-      <div className=" fixed inset-0 bg-black  bg-opacity-25 backdrop-blur-sm flex justify-center items-center ">
-        <form
-          id="AboutYouForm"
-          onSubmit={handleSubmit}
-          className="w-[35%] mx-auto h-[70%] overflow-y-auto bg-white px-5 pb-5 rounded-lg"
-        >
-          <div className="z-10 h-10 py-3 bg-white control flex justify-end sticky top-0">
-            <button
-              className="close_overlay items-center"
-              onClick={() => onClose()}
-            >
-              <RxCross2 />
-            </button>
-          </div>
-          <div className=" relative w-full mb-5 group  ">
-            <label className="block mb-2 text-sm font-medium text-black ">
-              Full Name
-            </label>
-            <input
-              type="text"
-              id="base-input"
-              name="FullName"
-              ref={FullNameInput}
-              className="bg-white border   text-sm rounded-lg  block w-full p-2.5  text-black  shadow-md required"
-            />
-          </div>
-          <div className="relative z-0 w-full mb-5 group">
-            <label className="block mb-2 text-sm font-medium text-black ">
-              Course
-            </label>
-            <input
-              type="text"
-              id="base-input"
-              name="Course"
-              ref={CourseInput}
-              className="bg-white border text-sm rounded-lg  block w-full p-2.5  text-black  shadow-md required"
-            />
-          </div>
-          <div className="relative z-0 w-full mb-5 group">
-            <label
-              htmlFor="base-input"
-              className="block mb-2 text-sm font-medium text-black "
-            >
-              Branch
-            </label>
-            <input
-              type="text"
-              id="base-input"
-              name="Branch"
-              ref={BranchInput}
-              className="bg-white border text-sm rounded-lg  block w-full p-2.5  text-black  shadow-md required"
-            />
-          </div>
-          <div className="relative z-0 w-full mb-5 group">
-            <label
-              htmlFor="base-input"
-              className="block mb-2 text-sm font-medium text-black "
-            >
-              Semester
-            </label>
-            <input
-              type="text"
-              id="base-input"
-              name="Semester"
-              ref={SemesterInput}
-              className="bg-white border text-sm rounded-lg  block w-full p-2.5  text-black  shadow-md required"
-            />
-          </div>
-          <div className="relative z-0 w-full mb-5 group">
-            <label
-              htmlFor="base-input"
-              className="block mb-2 text-sm font-medium text-black "
-            >
-              Specialization
-            </label>
-            <input
-              type="text"
-              id="base-input"
-              name="Specialization"
-              ref={SpecializationInput}
-              className="bg-white border text-sm rounded-lg  block w-full p-2.5  text-black  shadow-md required"
-            />
-          </div>
-          <div className="relative z-0 w-full mb-5 group space-x-2">
-            <span className="block mb-2 text-sm font-medium text-black">
-              Gender
-            </span>
-            <label htmlFor="male">Male</label>
-            <input
-              type="radio"
-              id="male"
-              name="Gender"
-              value="Male"
-              onChange={(e) => setGender(e.target.value)}
-            />
-            <label htmlFor="female">Female</label>
-            <input
-              type="radio"
-              id="female"
-              name="Gender"
-              value="Female"
-              onChange={(e) => setGender(e.target.value)}
-            />
-            <label htmlFor="other">Other</label>
-            <input
-              type="radio"
-              id="other"
-              name="Gender"
-              value="Other"
-              onChange={(e) => setGender(e.target.value)}
-            />
-          </div>
-          <div className="relative z-0 w-full mb-5 group">
-            <label
-              htmlFor="base-input"
-              className="block mb-2 text-sm font-medium text-black "
-            >
-              Date of Birth (DD/MM/YYYY)
-            </label>
-            <input
-              type="date"
-              id="base-input"
-              name="DOB"
-              ref={DOBInput}
-              className="bg-white border text-sm rounded-lg  block w-full p-2.5  text-black  shadow-md required"
-            />
-          </div>
+    <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex justify-center items-center">
+      <form
+        onSubmit={handleSubmit}
+        className="w-[80%] md:w-[40%] mx-auto h-[70%] overflow-y-auto bg-white px-5 pb-5 rounded-lg"
+      >
+        <div className="z-10 h-10 py-3 bg-white control flex justify-end sticky top-0">
           <button
-            type="submit"
-            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            type="button"
+            className="close_overlay items-center"
+            onClick={onClose}
           >
-            Update
-          </button>{" "}
-          <button
-            type="reset"
-            className="text-white bg-gray-400 hover:bg-gray-500 focus:outline-none font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-gray-400 dark:hover:bg-gray-500 "
-          >
-            reset
+            <RxCross2 />
           </button>
-        </form>
-      </div>
-    </>
+        </div>
+
+        <div className="mb-5">
+          <label className="block mb-2 text-sm font-medium text-black">
+            Full Name
+          </label>
+          <input
+            type="text"
+            name="FullName"
+            value={formData.FullName}
+            onChange={handleChange}
+            className="bg-white border text-sm rounded-lg block w-full p-2.5 text-black shadow-md"
+          />
+          {errors.FullName && (
+            <p className="text-red-500 text-xs mt-1">{errors.FullName}</p>
+          )}
+        </div>
+
+        <div className="mb-5">
+          <label className="block mb-2 text-sm font-medium text-black">
+            Course
+          </label>
+          <select
+            name="Course"
+            value={formData.Course}
+            onChange={handleChange}
+            className="bg-white border text-sm rounded-lg block w-full p-2.5 text-black shadow-md"
+          >
+            <option value="">Select Course</option>
+            {courses.map((course) => (
+              <option key={course} value={course}>
+                {course}
+              </option>
+            ))}
+          </select>
+          {errors.Course && (
+            <p className="text-red-500 text-xs mt-1">{errors.Course}</p>
+          )}
+        </div>
+
+        <div className="mb-5">
+          <label className="block mb-2 text-sm font-medium text-black">
+            Branch
+          </label>
+          <select
+            name="Branch"
+            value={formData.Branch}
+            onChange={handleChange}
+            className="bg-white border text-sm rounded-lg block w-full p-2.5 text-black shadow-md"
+          >
+            <option value="">Select Branch</option>
+            {branches.map((branch) => (
+              <option key={branch} value={branch}>
+                {branch}
+              </option>
+            ))}
+          </select>
+          {errors.Branch && (
+            <p className="text-red-500 text-xs mt-1">{errors.Branch}</p>
+          )}
+        </div>
+
+        <div className="mb-5">
+          <label className="block mb-2 text-sm font-medium text-black">
+            Semester
+          </label>
+          <select
+            name="Semester"
+            value={formData.Semester}
+            onChange={handleChange}
+            className="bg-white border text-sm rounded-lg block w-full p-2.5 text-black shadow-md"
+          >
+            <option value="">Select Semester</option>
+            {semesters.map((semester) => (
+              <option key={semester} value={semester}>
+                {semester}
+              </option>
+            ))}
+          </select>
+          {errors.Semester && (
+            <p className="text-red-500 text-xs mt-1">{errors.Semester}</p>
+          )}
+        </div>
+
+        <div className="mb-5">
+          <label className="block mb-2 text-sm font-medium text-black">
+            Specialization
+          </label>
+          <select
+            name="Specialization"
+            value={formData.Specialization}
+            onChange={handleChange}
+            className="bg-white border text-sm rounded-lg block w-full p-2.5 text-black shadow-md"
+          >
+            <option value="">Select Specialization</option>
+            {specializations.map((spec) => (
+              <option key={spec} value={spec}>
+                {spec}
+              </option>
+            ))}
+          </select>
+          {errors.Specialization && (
+            <p className="text-red-500 text-xs mt-1">{errors.Specialization}</p>
+          )}
+        </div>
+
+        <div className="mb-5">
+          <label className="block mb-2 text-sm font-medium text-black">
+            Gender
+          </label>
+          <div className="flex space-x-4">
+            {["Male", "Female", "Other"].map((gender) => (
+              <label key={gender} className="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="Gender"
+                  value={gender}
+                  checked={formData.Gender === gender}
+                  onChange={handleChange}
+                  className="form-radio h-5 w-5 text-blue-600"
+                />
+                <span className="ml-2 text-gray-700">{gender}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div className="mb-5">
+          <label className="block mb-2 text-sm font-medium text-black">
+            Date of Birth
+          </label>
+          <input
+            type="date"
+            name="DOB"
+            value={formData.DOB}
+            onChange={handleChange}
+            className="bg-white border text-sm rounded-lg block w-full p-2.5 text-black shadow-md"
+          />
+        </div>
+
+        <div className="mb-5">
+          <label className="block mb-2 text-sm font-medium text-black">
+            Personal Email
+          </label>
+          <input
+            type="email"
+            name="PersonalEmail"
+            value={formData.PersonalEmail}
+            onChange={handleChange}
+            className="bg-white border text-sm rounded-lg block w-full p-2.5 text-black shadow-md"
+          />
+          {errors.PersonalEmail && (
+            <p className="text-red-500 text-xs mt-1">{errors.PersonalEmail}</p>
+          )}
+        </div>
+
+        <div className="mb-5">
+          <label className="block mb-2 text-sm font-medium text-black">
+            Enrollment Number
+          </label>
+          <input
+            type="text"
+            name="EnrollmentNumber"
+            value={formData.EnrollmentNumber}
+            onChange={handleChange}
+            className="bg-white border text-sm rounded-lg block w-full p-2.5 text-black shadow-md"
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className={`text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center ${
+            isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+          }`}
+        >
+          {isSubmitting ? "Updating..." : "Update"}
+        </button>
+        {errors.submit && (
+          <p className="text-red-500 text-xs mt-2">{errors.submit}</p>
+        )}
+      </form>
+    </div>
   );
 };
 

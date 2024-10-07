@@ -6,6 +6,7 @@ import { postsAction } from "../../../store/postsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import useSound from "use-sound";
 import PostOverlay from "./PostOverlay";
+import { PiCodeDuotone } from "react-icons/pi";
 import { auth, db } from "../../../firebase.config";
 import {
   collection,
@@ -16,7 +17,6 @@ import {
   addDoc,
   serverTimestamp,
 } from "firebase/firestore";
-import LoadingCool2 from "../../LoadingCool2";
 import { Link } from "react-router-dom";
 
 const Post = React.forwardRef(({ postData, isOverlay }, ref) => {
@@ -27,56 +27,19 @@ const Post = React.forwardRef(({ postData, isOverlay }, ref) => {
     postData.likedBy.hasOwnProperty(auth.currentUser.uid)
   );
   const [threeDots, setThreeDots] = useState(false);
-  const [userName, setUserName] = useState("");
-  const [userImage, setUserImage] = useState("");
-  const [yearInfo, setYearInfo] = useState("");
   const [isPostClicked, setIsPostClicked] = useState(false);
   const [likes, setLikes] = useState(postData.likes);
-  const [postImage, setPostImage] = useState("");
   const [postDeleted, setPostDeleted] = useState(false);
-  const [imageLoading, setImageLoading] = useState(false);
-  const [imageError, setImageError] = useState(false);
+  const postTextContent = postData.content.replace(/\n/g, "<br>");
   const [sound] = useSound("src/Media/multi-pop-1-188165.mp3", {
     volume: 0.2,
   });
   const likedByPeople = Object.keys(postData.likedBy);
   const dropdownRef = useRef(null);
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const userDocRef = doc(db, "users", postData.user);
-      const userDoc = await getDoc(userDocRef);
-      if (userDoc.exists()) {
-        const data = userDoc.data();
-        setUserName(data.username);
-        setUserImage(data.avatarURL);
-        setYearInfo(data.Semister + " " + data.Branch);
-      }
-    };
-    fetchUserData();
-
-    const fetchPostImage = async () => {
-      if (postData.postImage) {
-        setImageLoading(true);
-        try {
-          console.log("Image URL from postData:", postData.postImage);
-          setPostImage(postData.postImage);
-        } catch (error) {
-          console.error("Error setting image:", error);
-          setPostImage(null);
-          setImageError(true);
-        } finally {
-          setImageLoading(false);
-        }
-      }
-    };
-    fetchPostImage();
-  }, [postData.user, postData.postImage]);
-
   const handleThreeDots = () => {
     setThreeDots(!threeDots);
   };
-
   const handleLike = async () => {
     const userUid = auth.currentUser.uid;
     const newLikeState = !localLiked;
@@ -134,17 +97,23 @@ const Post = React.forwardRef(({ postData, isOverlay }, ref) => {
       console.error("Error updating document: ", error);
     }
   };
-
   const handleDeletePost = async () => {
-    try {
-      await deleteDoc(doc(db, "post", postData.id));
-      setPostDeleted(true);
-    } catch (error) {
-      console.error("Error removing document: ", error);
+    if (auth.currentUser.uid === postData.user) {
+      if (
+        window.confirm(
+          "You cannot get this post back after deletion, are you sure you want to delete this post?"
+        )
+      ) {
+        try {
+          await deleteDoc(doc(db, "post", postData.id));
+          setPostDeleted(true);
+        } catch (error) {
+          console.error("Error removing document: ", error);
+        }
+      }
     }
     setThreeDots(false);
   };
-
   function getTimeDifference(timestamp) {
     const now = new Date().getTime();
     let postTime;
@@ -169,7 +138,6 @@ const Post = React.forwardRef(({ postData, isOverlay }, ref) => {
       return `${minutes}m`;
     }
   }
-
   function formatLikeCount(count) {
     if (count >= 1000) {
       return (count / 1000).toFixed(1) + "K";
@@ -177,7 +145,6 @@ const Post = React.forwardRef(({ postData, isOverlay }, ref) => {
       return count.toString();
     }
   }
-
   useEffect(() => {
     const handleOutsideClick = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -202,31 +169,37 @@ const Post = React.forwardRef(({ postData, isOverlay }, ref) => {
           <div className="postHeader flex justify-between">
             <Link
               to={`${
-                userName == userDataUserName
+                postData.userName == userDataUserName
                   ? "/profile"
                   : "/DisplayOnlyProfile"
               }`}
-              state={{ user: userName }}
+              state={{ user: postData.userName }}
               className="userInfo flex space-x-2 my-2 "
             >
               <img
-                src={userImage}
+                src={postData.userImage}
                 alt="user_ki_photu"
                 className="rounded-full w-8 h-8 ml-2 mt-2 border-[0.5px]"
               />
-              <div className="userName mt-2 flex gap-2">
+              <div className="userName mt-3 flex gap-2">
                 <div className="flex">
                   <span className="text-base font-medium opacity-70">
-                    {userName}
+                    {postData.userName}
                   </span>
-                  {(userName === "devanshVerma" ||
-                    userName === "praharshsingh07") && (
-                    <MdVerified className="mt-[5.2px] ml-1 text-base text-blue-500" />
+                  {postData.verified && (
+                    <>
+                      {postData.dev && (
+                        <span className=" mt-[5px] mx-1">
+                          <PiCodeDuotone className="text-lg font-semibold" />
+                        </span>
+                      )}
+                      <MdVerified className="mt-[5.3px] ml-[2px] text-[15px] text-blue-500" />
+                    </>
                   )}
                 </div>
                 <span className="yearInfo opacity-60 text-sm mt-[3px]">
                   {" "}
-                  ~ sem {yearInfo} {}
+                  ~ {postData.yearInfo} {}
                 </span>
               </div>
             </Link>
@@ -236,7 +209,7 @@ const Post = React.forwardRef(({ postData, isOverlay }, ref) => {
               </span>
               <div
                 className={`postSettings rounded-full h-7 p-1 hover:bg-white ${
-                  userName != userDataUserName && "hidden"
+                  postData.userName != userDataUserName && "hidden"
                 }`}
                 onClick={() => handleThreeDots()}
               >
@@ -268,27 +241,22 @@ const Post = React.forwardRef(({ postData, isOverlay }, ref) => {
               </div>
             </div>
           </div>
-          <p className="content border-l-2 border-gray-400 pl-3 mb-3 mx-6 py-0 overflow-hidden">
-            {postData.content}
-          </p>
-          {imageLoading ? (
-            <div className="mb-4 ml-8">
-              <LoadingCool2 />
-            </div>
-          ) : postImage ? (
+          <p
+            className="content border-l-2 border-gray-300 pl-3 mb-3 mx-6 py-0 overflow-hidden"
+            dangerouslySetInnerHTML={{ __html: postTextContent }}
+          ></p>
+          {postData.postImage ? (
             <div className="mb-4 border-[1px] border-gray-500 w-fit ml-8">
               <img
-                src={postImage}
+                src={postData.postImage}
                 alt="Post image"
-                className="max-w-lg h-auto"
+                className="md:max-w-lg max-h-80"
                 onError={(e) => {
                   console.error("Error loading image:", e);
                   setImageError(true);
                 }}
               />
             </div>
-          ) : imageError ? (
-            <div>Error loading image</div>
           ) : (
             <div></div>
           )}
@@ -302,27 +270,35 @@ const Post = React.forwardRef(({ postData, isOverlay }, ref) => {
               ) : (
                 <FcLike className="text-2xl" onClick={() => handleLike()} />
               )}
-              <Link
-                to="/LikedByList"
-                state={{
-                  likedBy: {
-                    likedByUsers: likedByPeople,
-                    userDataUserName: userDataUserName,
-                  },
-                }}
-                className="likesCount text-sm text-gray-500 mt-[2px]"
-              >
-                {formatLikeCount(likes)}
-                {`${likes < 2 ? " Reaction" : " Reactions"}`}
-              </Link>
+              <div>
+                <Link
+                  to="/LikedByList"
+                  state={{
+                    likedBy: {
+                      likedByUsers: likedByPeople,
+                      userDataUserName: userDataUserName,
+                    },
+                  }}
+                  className="group relative likesCount text-sm text-gray-500 mt-[2px]"
+                >
+                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-gray-700 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                    See people who reacted
+                  </div>
+                  {formatLikeCount(likes)}
+                  {`${likes < 2 ? " Reaction" : " Reactions"}`}
+                </Link>
+              </div>
             </div>
             <div
               className="comment flex space-x-1 cursor-pointer p-0 hover:text-blue-500 mb-1"
               onClick={() => setIsPostClicked(true)}
             >
-              <BsReply className="opacity-55 text-xl" />
-              <span className="mt-[1px] text-sm text-gray-500 hover:text-blue-600 font-normal">
-                Reply
+              <BsReply className="text-xl" />
+              <span className=" text-sm text-gray-500 mt-[1px]">
+                {postData.comments.length}
+              </span>
+              <span className="mt-[1px] text-sm text-gray-500 font-normal">
+                {postData.comments.length > 1 ? "Replies" : "Reply"}
               </span>
             </div>
           </div>
@@ -332,7 +308,7 @@ const Post = React.forwardRef(({ postData, isOverlay }, ref) => {
         <PostOverlay
           isOpen={isPostClicked}
           onClose={() => setIsPostClicked(!isPostClicked)}
-          postData={{ ...postData, postImage: postImage }}
+          postData={postData}
         />
       )}
     </div>

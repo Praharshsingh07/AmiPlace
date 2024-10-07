@@ -26,12 +26,15 @@ const SideDrawer = () => {
   return (
     <>
       {/* Menu button */}
-      <button className="px-2 focus:outline-none mt-1" onClick={toggleDrawer}>
+      <button
+        className=" hidden md:block px-2 focus:outline-none mt-1"
+        onClick={toggleDrawer}
+      >
         {imgPath ? (
           <img
             src={imgPath}
             alt=""
-            className="user-image-sidedrawer rounded-full w-9 border-2 border-blue-300"
+            className="user-image-sidedrawer rounded-full min-w-9 min-h-9 max-w-9 max-h-9 border-2 border-blue-300"
           />
         ) : (
           <div>Set Up Profile</div>
@@ -71,6 +74,14 @@ const SideDrawer = () => {
             User Profile
           </Link>
         </div>
+        {/* <div className="p-4 border-b border-gray-300">
+          <Link
+            to="/AccountVerification"
+            className="text-gray-800 text-base focus:outline-none w-full text-left block"
+          >
+            Verify your account
+          </Link>
+        </div> */}
         <div className="p-4">
           <button
             onClick={handleLogout}

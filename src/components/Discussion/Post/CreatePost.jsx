@@ -4,20 +4,13 @@ import { FcDeleteRow } from "react-icons/fc";
 import { BsImage } from "react-icons/bs";
 import { FcCheckmark } from "react-icons/fc";
 import { createPostActions } from "../../../store/createPostSlice";
-import { postsAction } from "../../../store/postsSlice";
-import {
-  getDocs,
-  addDoc,
-  collection,
-  serverTimestamp,
-  orderBy,
-  query,
-} from "firebase/firestore";
+// import { postsAction } from "../../../store/postsSlice";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { auth, db, storage } from "../../../firebase.config";
-import LoadingCool from "../../LoadingCool";
+import LoadingCool from "../../xyzComponents/LoadingCool";
 
-const CreatePost = () => {
+const CreatePost = ({ postsReload }) => {
   const dispatch = useDispatch();
   const { userData } = useSelector((state) => state.userDetails);
   const [postContent, setPostContent] = useState("");
@@ -103,10 +96,10 @@ const CreatePost = () => {
       setLoading(false);
       return;
     }
-    dispatch(postsAction.addPost(newPost));
+    // dispatch(postsAction.addPost(newPost));
     setLoading(false);
+    postsReload();
     dispatch(createPostActions.createPost());
-    window.location.reload(false);
   };
 
   return (
@@ -129,9 +122,10 @@ const CreatePost = () => {
       </div>
       <textarea
         rows="10"
-        className="h-52 px-2 w-[100%] resize-none mt-3 focus:outline-none"
+        className="h-52 px-2 w-[100%] resize-none mt-3 focus:outline-none whitespace-pre-wrap"
         placeholder="Share your experience or ask from others."
-        onChange={(e) => setPostContent(e.target.value.trim())}
+        onChange={(e) => setPostContent(e.target.value)}
+        value={postContent}
         autoFocus
       ></textarea>
       {loading && <LoadingCool />}
