@@ -5,7 +5,9 @@ import { getToken } from "firebase/messaging";
 import { AuthProvider } from "./components/Auth/AuthContext";
 import LoadingSpinner from "./components/xyzComponents/LoadingSpinner";
 import { auth, db, messaging } from "./firebase.config";
-import { doc, setDoc } from "firebase/firestore";
+import { useDispatch } from "react-redux";
+import { userDataAction } from "./store/userDetailsSlice";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 // Your VAPID key (this is the same for all users)
 const VAPID_KEY =
@@ -29,6 +31,21 @@ function App() {
       }
     });
   };
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const user = auth.currentUser;
+      if (user) {
+        const userDocRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userDocRef);
+        if (userDoc.exists()) {
+          dispatch(userDataAction.addDataToUserDataStore(userDoc.data()));
+        }
+      }
+    };
+    fetchUserData();
+  }, [isLoading]);
   const requestPermission = async () => {
     try {
       const permission = await Notification.requestPermission();
@@ -37,8 +54,7 @@ function App() {
         const token = await getToken(messaging, { vapidKey: VAPID_KEY });
         // console.log("FCM token: ", token);
         // Here you can send this token to your Firebase database to associate it with the current user
-        // For example:
-        addFCMTokenToCurrentUser(token); // You need to implement this
+        addFCMTokenToCurrentUser(token);
       } else if (permission === "denied") {
         console.log("Notification permission denied");
       }
