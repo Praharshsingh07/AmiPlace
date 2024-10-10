@@ -9,15 +9,11 @@ import { useNavigate, Navigate } from "react-router-dom";
 import signupAnimation from "../../animations/animation-2.json";
 import loadingAnimation from "../../animations/loadinganimation.json";
 import { Link } from "react-router-dom";
-import {
-  addDoc,
-  serverTimestamp,
-  setDoc,
-  updateDoc,
-  doc,
-} from "firebase/firestore";
+import { serverTimestamp, setDoc, doc } from "firebase/firestore";
+
+// import { getToken, subscribeToTopic } from "firebase/messaging";
+// import { messaging } from "./firebase.config";
 import { AuthContext } from "./AuthContext.jsx";
-import { useEffect } from "react";
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -27,11 +23,25 @@ function Login() {
   const [formErrors, setFormErrors] = useState({});
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [userType, setUserType] = useState("");
+  // const [userType, setUserType] = useState("");
   const navigate = useNavigate();
   const { currentUser } = useContext(AuthContext);
   const studentEmailRegex = /^[\w\.-]+@s\.amity\.edu$/;
   const adminEmailRegex = /^[\w\.-]+@gwa\.amity\.edu$/;
+
+  // const subscribeToNewJobs = async () => {
+  //   try {
+  //     const currentToken = await getToken(messaging, {
+  //       vapidKey: "YOUR_VAPID_KEY",
+  //     });
+  //     if (currentToken) {
+  //       await subscribeToTopic(currentToken, "new_jobs");
+  //       console.log("Subscribed to new_jobs topic");
+  //     }
+  //   } catch (err) {
+  //     console.log("An error occurred while subscribing to topic: ", err);
+  //   }
+  // };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -197,6 +207,7 @@ function Login() {
                       ? "bg-white"
                       : "bg-blue-600 text-white hover:bg-blue-500"
                   }`}
+                  // onClick={() => subscribeToNewJobs()}
                 >
                   {loading ? (
                     <Lottie

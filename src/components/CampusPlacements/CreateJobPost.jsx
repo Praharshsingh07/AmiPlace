@@ -3,7 +3,6 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useEffect, useState } from "react";
 import { auth, db, storage } from "../../firebase.config";
 
-// Define course options
 const techCourses = [
   "All_Tech",
   "B.Tech Computer Science",
@@ -24,26 +23,35 @@ const nonTechCourses = [
   "MA Economics",
 ];
 
+// Define gender criteria options
+const GENDER_CRITERIA = {
+  FOR_ALL: "ForAll",
+  FEMALE_ONLY: "Female",
+  MALE_ONLY: "Male"
+};
+
 const CreateJobPost = ({ onClose, jobId }) => {
-  const [formData, setFormData] = useState({
+  const initialFormData = {
     companyName: "",
-    openedTill: "",
     jobRole: "",
     ctc: "",
     location: "",
     requirements: "",
+    jobOpeningDate: "",
+    openedTill: "",
     jobDescriptionFile: null,
     jobDescriptionFileUrl: "",
     maxAge: "",
     selectedCourses: [],
-    jobOpeningDate: "",
+    genderCriteria: "",
     maxBacklogs: "",
-    placedCriteria: false,
+    placedCriteria: "",
     minCGPA: "",
     min12thPercentage: "",
     min10thPercentage: "",
-  });
+  };
 
+  const [formData, setFormData] = useState(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [isLoading, setIsLoading] = useState(!!jobId);
@@ -56,7 +64,19 @@ const CreateJobPost = ({ onClose, jobId }) => {
         const jobDoc = await getDoc(doc(db, "Jobs", jobId));
         if (jobDoc.exists()) {
           const data = jobDoc.data();
-          setFormData(data);
+          // Transform the data to match form structure
+          setFormData({
+            ...initialFormData,
+            ...data,
+            maxAge: data.EligibilityCriteria?.maxAge || "",
+            placedCriteria: data.EligibilityCriteria?.placedCriteria ? "1" : "0",
+            maxBacklogs: data.EligibilityCriteria?.maxBacklogs || "",
+            minCGPA: data.EligibilityCriteria?.minCGPA || "",
+            selectedCourses: data.EligibilityCriteria?.selectedCourses || [],
+            min12thPercentage: data.EligibilityCriteria?.min12thPercentage || "",
+            min10thPercentage: data.EligibilityCriteria?.min10thPercentage || "",
+            genderCriteria: data.EligibilityCriteria?.genderCriteria || "", // Added this line
+          });
         }
       } catch (error) {
         console.error("Error fetching job data:", error);
@@ -86,10 +106,16 @@ const CreateJobPost = ({ onClose, jobId }) => {
         ...prevData,
         selectedCourses: updatedCourses,
       }));
+    } else if (type === "file") {
+      setFormData((prevData) => ({
+        ...prevData,
+        jobDescriptionFile: files[0],
+        jobDescriptionFileUrl: "", // Reset URL when new file is selected
+      }));
     } else {
       setFormData((prevData) => ({
         ...prevData,
-        [name]: type === "file" ? files[0] : value,
+        [name]: value,
       }));
     }
   };
@@ -111,31 +137,34 @@ const CreateJobPost = ({ onClose, jobId }) => {
       }
 
       const jobData = {
-        ...formData,
+        companyName: formData.companyName,
+        jobRole: formData.jobRole,
+        ctc: formData.ctc,
+        location: formData.location,
+        requirements: formData.requirements,
         companyNameUpper: formData.companyName.toUpperCase(),
         jobDescriptionFileUrl: fileUrl,
-        maxAge: Number(formData.maxAge),
-        jobOpeningDate: formData.jobOpeningDate, 
-        openedTill: formData.openedTill, 
-        placedCriteria: Boolean(formData.placedCriteria),
-        maxBacklogs: Number(formData.maxBacklogs),
-        minCGPA: Number(formData.minCGPA),
-        applicants: [],
-        min12thPercentage: Number(formData.min12thPercentage),
-        min10thPercentage: Number(formData.min10thPercentage),
+        jobOpeningDate: formData.jobOpeningDate,
+        openedTill: formData.openedTill,
+        createdAt: jobId ? formData.createdAt : new Date(),
+        createdBy: jobId ? formData.createdBy : auth.currentUser.uid,
+        applicants: jobId ? formData.applicants : [],
+        EligibilityCriteria: {
+          maxAge: Number(formData.maxAge),
+          placedCriteria: formData.placedCriteria === "1",
+          maxBacklogs: Number(formData.maxBacklogs),
+          minCGPA: Number(formData.minCGPA),
+          selectedCourses: [...formData.selectedCourses],
+          min12thPercentage: Number(formData.min12thPercentage),
+          min10thPercentage: Number(formData.min10thPercentage),
+          genderCriteria: formData.genderCriteria, // Added this line
+        },
       };
-      delete jobData.jobDescriptionFile;
 
       if (jobId) {
-        // Update existing job
         await updateDoc(doc(db, "Jobs", jobId), jobData);
         alert("Job post updated successfully!");
       } else {
-        // Create new job
-        jobData.createdAt = new Date();
-        jobData.closed = false;
-        jobData.createdBy = auth.currentUser.uid;
-        jobData.applicants = [];
         await addDoc(collection(db, "Jobs"), jobData);
         alert("Job post created successfully!");
       }
@@ -407,6 +436,27 @@ const CreateJobPost = ({ onClose, jobId }) => {
               className="mt-1 block w-[30%] px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
+          <div className="mb-4">
+          <label
+            htmlFor="genderCriteria"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Gender Criteria
+          </label>
+          <select
+            id="genderCriteria"
+            name="genderCriteria"
+            value={formData.genderCriteria}
+            onChange={handleChange}
+            required
+            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="">Select</option>
+            <option value={GENDER_CRITERIA.FOR_ALL}>For all</option>
+            <option value={GENDER_CRITERIA.FEMALE_ONLY}>Females Only</option>
+            <option value={GENDER_CRITERIA.MALE_ONLY}>Male Only</option>
+          </select>
+        </div>
           <div className="mb-4">
             <label
               htmlFor="placedCriteria"
