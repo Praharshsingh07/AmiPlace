@@ -27,7 +27,7 @@ const SideDrawer = () => {
     <>
       {/* Menu button */}
       <button
-        className=" hidden md:block px-2 focus:outline-none mt-1"
+        className=" hidden md:block px-2 focus:outline-none mt-1 mr-3"
         onClick={toggleDrawer}
       >
         {imgPath ? (
