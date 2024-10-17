@@ -2,6 +2,7 @@ import { addDoc, collection, doc, getDoc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useEffect, useState } from "react";
 import { auth, db, storage } from "../../firebase.config";
+import { sendEmailsToUsers } from "../../mailer"
 
 const techCourses = [
   "All_Tech",
@@ -124,7 +125,7 @@ const CreateJobPost = ({ onClose, jobId }) => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitError(null);
-
+  
     try {
       let fileUrl = formData.jobDescriptionFileUrl;
       if (formData.jobDescriptionFile) {
@@ -135,7 +136,7 @@ const CreateJobPost = ({ onClose, jobId }) => {
         await uploadBytes(storageRef, formData.jobDescriptionFile);
         fileUrl = await getDownloadURL(storageRef);
       }
-
+  
       const jobData = {
         companyName: formData.companyName,
         jobRole: formData.jobRole,
@@ -157,16 +158,19 @@ const CreateJobPost = ({ onClose, jobId }) => {
           selectedCourses: [...formData.selectedCourses],
           min12thPercentage: Number(formData.min12thPercentage),
           min10thPercentage: Number(formData.min10thPercentage),
-          genderCriteria: formData.genderCriteria, // Added this line
+          genderCriteria: formData.genderCriteria,
         },
       };
-
+  
       if (jobId) {
         await updateDoc(doc(db, "Jobs", jobId), jobData);
         alert("Job post updated successfully!");
+        await sendEmailsToUsers(jobData); // Pass the job data
       } else {
-        await addDoc(collection(db, "Jobs"), jobData);
+        const docRef = await addDoc(collection(db, "Jobs"), jobData);
+        jobData.id = docRef.id; // Add the document ID to the job data
         alert("Job post created successfully!");
+        await sendEmailsToUsers(jobData); // Pass the job data
       }
       onClose();
     } catch (error) {
