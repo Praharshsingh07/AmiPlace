@@ -32,3 +32,10 @@ export const messaging = getMessaging(app);
 
 db.app;
 
+async function fetchUsers() {
+  const usersCollection = collection(db, 'users');
+  const userSnapshot = await getDocs(usersCollection);
+  const userList = userSnapshot.docs.map(doc => doc.data());
+  return userList;
+}
+
