@@ -232,6 +232,7 @@ const About_You = ({ isVisible, onClose, refresh }) => {
             name="FullName"
             value={formData.FullName}
             onChange={handleChange}
+            required
             className="bg-white border text-sm rounded-lg block w-full p-2.5 text-black shadow-md"
           />
           {errors.FullName && (
@@ -247,6 +248,7 @@ const About_You = ({ isVisible, onClose, refresh }) => {
             name="Course"
             value={formData.Course}
             onChange={handleChange}
+            required
             className="bg-white border text-sm rounded-lg block w-full p-2.5 text-black shadow-md"
           >
             <option value="">Select Course</option>
@@ -269,6 +271,7 @@ const About_You = ({ isVisible, onClose, refresh }) => {
             name="Branch"
             value={formData.Branch}
             onChange={handleChange}
+            required
             className="bg-white border text-sm rounded-lg block w-full p-2.5 text-black shadow-md"
           >
             <option value="">Select Branch</option>
@@ -291,6 +294,7 @@ const About_You = ({ isVisible, onClose, refresh }) => {
             name="Semester"
             value={formData.Semester}
             onChange={handleChange}
+            required
             className="bg-white border text-sm rounded-lg block w-full p-2.5 text-black shadow-md"
           >
             <option value="">Select Semester</option>
@@ -313,6 +317,7 @@ const About_You = ({ isVisible, onClose, refresh }) => {
             name="Specialization"
             value={formData.Specialization}
             onChange={handleChange}
+            required
             className="bg-white border text-sm rounded-lg block w-full p-2.5 text-black shadow-md"
           >
             <option value="">Select Specialization</option>
@@ -340,6 +345,7 @@ const About_You = ({ isVisible, onClose, refresh }) => {
                   value={gender}
                   checked={formData.Gender === gender}
                   onChange={handleChange}
+                  required
                   className="form-radio h-5 w-5 text-blue-600"
                 />
                 <span className="ml-2 text-gray-700">{gender}</span>
@@ -356,6 +362,7 @@ const About_You = ({ isVisible, onClose, refresh }) => {
             type="date"
             name="DOB"
             value={formData.DOB}
+            required
             onChange={handleChange}
             className="bg-white border text-sm rounded-lg block w-full p-2.5 text-black shadow-md"
           />
@@ -369,6 +376,7 @@ const About_You = ({ isVisible, onClose, refresh }) => {
             type="email"
             name="PersonalEmail"
             value={formData.PersonalEmail}
+            required
             onChange={handleChange}
             className="bg-white border text-sm rounded-lg block w-full p-2.5 text-black shadow-md"
           />
@@ -386,6 +394,7 @@ const About_You = ({ isVisible, onClose, refresh }) => {
             name="EnrollmentNumber"
             value={formData.EnrollmentNumber}
             onChange={handleChange}
+            required
             className="bg-white border text-sm rounded-lg block w-full p-2.5 text-black shadow-md"
           />
         </div>
@@ -400,6 +409,7 @@ const About_You = ({ isVisible, onClose, refresh }) => {
             step="0.01"
             name="TenthPercentage"
             value={formData.TenthPercentage}
+            required
             onChange={handleChange}
             className="bg-white border text-sm rounded-lg block w-full p-2.5 text-black shadow-md"
           />
@@ -419,6 +429,7 @@ const About_You = ({ isVisible, onClose, refresh }) => {
             step="0.01"
             name="TwelfthPercentage"
             value={formData.TwelfthPercentage}
+            required
             onChange={handleChange}
             className="bg-white border text-sm rounded-lg block w-full p-2.5 text-black shadow-md"
           />
@@ -438,6 +449,7 @@ const About_You = ({ isVisible, onClose, refresh }) => {
             step="0.01"
             name="CurrentCGPA"
             value={formData.CurrentCGPA}
+            required
             onChange={handleChange}
             className="bg-white border text-sm rounded-lg block w-full p-2.5 text-black shadow-md"
           />
@@ -454,6 +466,7 @@ const About_You = ({ isVisible, onClose, refresh }) => {
             type="number"
             name="CurrentBacklogs"
             value={formData.CurrentBacklogs}
+            required
             onChange={handleChange}
             className="bg-white border text-sm rounded-lg block w-full p-2.5 text-black shadow-md"
           />
@@ -467,6 +480,7 @@ const About_You = ({ isVisible, onClose, refresh }) => {
             name="CurrentAddress"
             value={formData.CurrentAddress}
             onChange={handleChange}
+            required
             className="bg-white border text-sm rounded-lg block w-full p-2.5 text-black shadow-md"
           />
         </div>
@@ -480,6 +494,7 @@ const About_You = ({ isVisible, onClose, refresh }) => {
             name="CurrentPinCode"
             value={formData.CurrentPinCode}
             onChange={handleChange}
+            required
             className="bg-white border text-sm rounded-lg block w-full p-2.5 text-black shadow-md"
           />
           {errors.CurrentPinCode && (
@@ -495,6 +510,7 @@ const About_You = ({ isVisible, onClose, refresh }) => {
             name="PermanentAddress"
             value={formData.PermanentAddress}
             onChange={handleChange}
+            required
             className="bg-white border text-sm rounded-lg block w-full p-2.5 text-black shadow-md"
           />
         </div>
@@ -507,6 +523,7 @@ const About_You = ({ isVisible, onClose, refresh }) => {
             type="text"
             name="PermanentPinCode"
             value={formData.PermanentPinCode}
+            required
             onChange={handleChange}
             className="bg-white border text-sm rounded-lg block w-full p-2.5 text-black shadow-md"
           />

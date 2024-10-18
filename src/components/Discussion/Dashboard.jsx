@@ -31,6 +31,7 @@ const Dashboard = () => {
               userId: user.uid,
             })
           );
+          // console.log(userDoc.data());
         }
       }
     };
