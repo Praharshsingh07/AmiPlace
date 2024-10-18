@@ -31,7 +31,7 @@ const Post = React.forwardRef(({ postData, isOverlay }, ref) => {
   const [likes, setLikes] = useState(postData.likes);
   const [postDeleted, setPostDeleted] = useState(false);
   const postTextContent = postData.content.replace(/\n/g, "<br>");
-  const [sound] = useSound("src/Media/multi-pop-1-188165.mp3", {
+  const [sound] = useSound("https://firebasestorage.googleapis.com/v0/b/amiplace-3c576.appspot.com/o/multi-pop-1-188165.mp3?alt=media&token=3908b185-4ae0-486d-a7c0-c3e176c585b4", {
     volume: 0.2,
   });
   const likedByPeople = Object.keys(postData.likedBy);

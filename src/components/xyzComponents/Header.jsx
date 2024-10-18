@@ -5,9 +5,10 @@ import { CgProfile } from "react-icons/cg";
 import { CgOrganisation } from "react-icons/cg";
 import { MdConnectWithoutContact } from "react-icons/md";
 import { IoNotifications } from "react-icons/io5";
+import { MdWork } from "react-icons/md";
 import { TbLogout2 } from "react-icons/tb";
 import SideDrawer from "./SideDrawer";
-import UserSearch from "./UserSearch"; // Import the new UserSearch component
+import UserSearch from "./UserSearch";
 import { signOut } from "firebase/auth";
 import { auth } from "../../firebase.config";
 import JobsDropDown from "./JobsDropDown";
@@ -15,7 +16,8 @@ import JobsDropDown from "./JobsDropDown";
 const Header = ({ HeaderClassNames }) => {
   const [menu, setMenu] = useState(false);
   const [jobsDropDown, setJobsDropDown] = useState(false);
-  const dropdownRef = useRef(null); // Create ref for the dropdown element
+  const dropdownRef = useRef(null);
+  const jobsButtonRef = useRef(null);
 
   const handleMenuClick = () => {
     setMenu(!menu);
@@ -36,7 +38,11 @@ const Header = ({ HeaderClassNames }) => {
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target) &&
+        !jobsButtonRef.current.contains(event.target)
+      ) {
         setJobsDropDown(false);
       }
     };
@@ -83,32 +89,32 @@ const Header = ({ HeaderClassNames }) => {
               Companies
             </Link>
           </div>
-          <span
-            className="mx-3 cursor-pointer"
-            onMouseOver={() => handleJobsClick()}
-          >
-            Jobs/Internships
-          </span>
-          <div ref={dropdownRef}>
-            <JobsDropDown isOpen={jobsDropDown} />
+          <div className="relative">
+            <button
+              ref={jobsButtonRef}
+              className="mx-3 cursor-pointer"
+              onClick={handleJobsClick}
+            >
+              Jobs/Internships
+            </button>
+            <div ref={dropdownRef} className="absolute left-0 top-full mt-5">
+              <JobsDropDown isOpen={jobsDropDown} />
+            </div>
           </div>
         </div>
 
-        <div className="flex">
-          <div className="flex-shrink ">
-            <UserSearch />
-          </div>
-          <Link to="/Notifications" className="nav-link mx-3">
-            <IoNotifications className="text-xl mt-3" />
+        <div className="flex items-center gap-2">
+        <UserSearch />
+          <Link to="/Notifications" className="nav-link mx-1 md:mx-3">
+            <IoNotifications className="text-xl md:text-2xl md:text-gray-600 md:hover:text-gray-800"  />
           </Link>
           <SideDrawer />
-        </div>
-
-        {/* Mobile Menu Icon */}
-        <FiMenu
+          <FiMenu
           className="md:hidden mr-5 text-2xl cursor-pointer"
           onClick={handleMenuClick}
         />
+        </div>
+
       </nav>
 
       {/* Mobile Menu */}
@@ -146,6 +152,14 @@ const Header = ({ HeaderClassNames }) => {
             >
               <CgOrganisation className="text-xl" />
               <span>Companies</span>
+            </Link>
+            <Link
+              to="/CampusPlacements"
+              className="flex items-center space-x-2"
+              onClick={handleMenuClick}
+            >
+              <MdWork className="text-xl" />
+              <span>Campus Placements</span>
             </Link>
             <button
               onClick={handleLogout}
